@@ -3,3 +3,4 @@
 ## Projects
 
 - [Generative Art](generative-art)
+- [Demo](demo)
