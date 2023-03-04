@@ -2,7 +2,7 @@
 
 ## Projects
 
--[Final Project](final)
+- [Final Project](final)
 
 ## Demos
 
