@@ -15,7 +15,6 @@ let rectPosY;
 let modMouseX;
 let modMouseY;
 let facing;
-let reach = 40;
 let vel = 2;
 let campfireState = 'red';
 let campfireW = 20;
@@ -28,7 +27,6 @@ function setup() {
   
   playerX = width/2;
   playerY = height/2;
-  facing = createVector(winMouseX - playerX, winMouseY - playerY)
 }
 
 function draw() {
@@ -51,16 +49,13 @@ function player() {
 
   rectPosX = -playerX + width/2;
   rectPosY = -playerY + height/2;
-  facing.x = winMouseX - playerX;
-  facing.y = winMouseY - playerY;
-  facing.normalize();
-  facing.mult(reach);
-  facing.setHeading(3.14);
+  modMouseX = winMouseX - playerX;
+  modMouseY = winMouseY - playerY;
 
   rectMode(CENTER);
   fill('red');
   rect(rectPosX, rectPosY, 15, 15);
-  line(rectPosX, rectPosY, facing.x+rectPosX, facing.y+rectPosY);
+  line(rectPosX, rectPosY, modMouseX, modMouseY);
   
   if (keyIsDown(87)) { //w
     playerY += vel;
@@ -87,7 +82,7 @@ function interact() {
 }
 
 function within(x, y, w, h) {
-  if ((facing.x <= x+w/2 && facing.x >= x-w/2) && (facing.x <= y+h/2 && facing.y >= y-h/2)){
+  if ((modMouseX <= x+w/2 && modMouseX >= x-w/2) && (modMouseY <= y+h/2 && modMouseY >= y-h/2)){
     return true;
   }
 }
