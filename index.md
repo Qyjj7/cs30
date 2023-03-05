@@ -3,6 +3,7 @@
 ## Projects
 
 - [Final Project](final)
+- [Catch Baby](catch-baby)
 
 ## Demos
 
