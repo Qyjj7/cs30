@@ -10,3 +10,4 @@
 - [Demo](demo)
 - [Vectors](vectors)
 - [Bouncing Balls](bouncing-balls)
+- [Better Generative Art](better-generative-art)
