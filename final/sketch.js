@@ -97,19 +97,23 @@ function spawnEnemy(tempX, tempY) {
 function moveEnemy() {
 
   for (let i = 0; i<enemies.length; i++) {
-    let slope = getSlope(playerPos.x, playerPos.y, enemies[i].x, enemies[i].y)
+    let slope = getSlope(playerPos.x, playerPos.y, enemies[i].x, enemies[i].y);
     console.log(slope);
 
-  /*   enemies[i].x +=  enemies[i].dx;
-    let newSlope = getSlope(playerPos.x, playerPos.y, enemies[i].x, enemies[i].y);
-    while (int(slope*1000) != int(newSlope*1000)) {
-      newSlope = getSlope(playerPos.x, playerPos.y, enemies[i].x, enemies[i].y);
-      enemies[i].y ++;
+    if (enemies[i].x < playerPos.x) {
+      enemies[i].x +=  enemies[i].dx;
+    }
+    /* if (enemies[i].x > playerPos.x) {
+      enemies[i].x -=  enemies[i].dx;
     } */
+    enemies[i].y = getY(playerPos.x, enemies[i].x, slope);
 
   }
 }
 
 function getSlope(xi, yi, xf, yf) {
-  return -(yf-yi)/(xf-xi)
+  return -(yf-yi)/(xf-xi);
+}
+function getY(xi, xf, mySlope) {
+  return -mySlope*(xf-xi);
 }
