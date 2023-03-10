@@ -120,16 +120,18 @@ function moveEnemy() {
       enemies[i].x -= enemies[i].speed/slope;
     }
 
+    //enemies -= enemies[i].speed;
+
     enemies[i].y = getY(playerPos.x, enemies[i].x, slope);
 
-    console.log(slope)
+    console.log(slope);
 
   }
 }
 
-function getSlope(xi, yi, xf, yf) {
-  return (-yf-yi)/(xf-xi);
+function getSlope(xInitial, yInitial, xFinal, yFinal) {
+  return (-yFinal-yInitial)/(xFinal-xInitial);
 }
-function getY(xi, xf, mySlope) {
-  return -mySlope*(xf-xi);
+function getY(xInitial, xFinal, mySlope) {
+  return -mySlope*(xFinal-xInitial);
 }
