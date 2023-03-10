@@ -69,11 +69,14 @@ function display() {
   translate(width/2, height/2);
 
   rectMode(CENTER);
+  noFill();
   rect(playerPos.x, playerPos.y, 20, 20);
 
   line(playerPos.x, playerPos.y, vec.x+playerPos.x, vec.y+playerPos.y);
 
   line(-width, groundLevel, width, groundLevel);
+
+  circle(playerPos.x, playerPos.y, 600);
 
 
   for (let i=0; i<enemies.length; i++) {
@@ -87,8 +90,7 @@ function spawnEnemy(tempX, tempY) {
     x: tempX,
     y: tempY,
     pos: createVector(tempX, tempX),
-    dx: 3,
-    dy: 3,
+    speed: 3,
     diameter: 20,
   };
   enemies.push(newEnemy);
@@ -98,21 +100,35 @@ function moveEnemy() {
 
   for (let i = 0; i<enemies.length; i++) {
     let slope = getSlope(playerPos.x, playerPos.y, enemies[i].x, enemies[i].y);
-    console.log(slope);
 
-    if (enemies[i].x < playerPos.x) {
-      enemies[i].x +=  enemies[i].dx;
+    if (enemies[i].x >= playerPos.x && slope >= 1) {
+      enemies[i].x -= enemies[i].speed/slope;
     }
-    /* if (enemies[i].x > playerPos.x) {
-      enemies[i].x -=  enemies[i].dx;
-    } */
+    else if (enemies[i].x > playerPos.x && slope < 1 &&  slope > -1) {
+      enemies[i].x -= enemies[i].speed;
+    }
+    else if (enemies[i].x >= playerPos.x && slope <= -1) {
+      enemies[i].x += enemies[i].speed/slope;
+    }
+    else if (enemies[i].x < playerPos.x && slope > 1) {
+      enemies[i].x += enemies[i].speed/slope;
+    }
+    else if (enemies[i].x < playerPos.x && slope < 1 &&  slope > -1) {
+      enemies[i].x += enemies[i].speed;
+    }
+    else if (enemies[i].x < playerPos.x && slope < -1) {
+      enemies[i].x -= enemies[i].speed/slope;
+    }
+
     enemies[i].y = getY(playerPos.x, enemies[i].x, slope);
+
+    console.log(slope)
 
   }
 }
 
 function getSlope(xi, yi, xf, yf) {
-  return -(yf-yi)/(xf-xi);
+  return (-yf-yi)/(xf-xi);
 }
 function getY(xi, xf, mySlope) {
   return -mySlope*(xf-xi);
