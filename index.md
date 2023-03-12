@@ -2,12 +2,11 @@
 
 ## Projects
 
-- [Arrays and Objects](final)
-- [Vectors](vectors)
+- [Objects and Arrays](01-objects-arrays)
+- [Final Project](final)
 
 ## Demos
 
 - [Generative Art](generative-art)
-- [Demo](demo)
 - [Bouncing Balls](bouncing-balls)
-- [Better Generative Art](better-generative-art)
+- [Vectors](vectors)

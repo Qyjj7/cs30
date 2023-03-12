@@ -9,20 +9,32 @@ let boxes = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  displayBox(boxes[0]);
+  rectMode(CENTER);
+  angleMode(DEGREES);
+
+
+  for (let y = 0; y < height; y += 50) {
+    for (let x = 0; x < width; x += 50) {
+      spawnBox(x, y, 50, random(y*0.2));
+    }
+  }
 }
 
 function draw() {
   background(220);
-  spawnBox(boxes[0]);
+
+  //display all boxes
+  for (let i = 0; i < boxes.length; i++) {
+    displayBox(boxes[i]);
+  }
 }
 
 function displayBox(myBox) {
-  push();
+  push(); //saving the transformation matrix
   translate(myBox.x, myBox.y);
   rotate(myBox.rotation);
-  square(0,0,myBox.size);
-  pop();
+  square(0, 0, myBox.size);
+  pop(); //resetting the transformation matrix
 }
 
 function spawnBox(theX, theY, theSize, howRotated) {
