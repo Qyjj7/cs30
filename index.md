@@ -10,3 +10,4 @@
 - [Generative Art](generative-art)
 - [Bouncing Balls](bouncing-balls)
 - [Vectors](vectors)
+- [Perlin Noise](perlin-noise)

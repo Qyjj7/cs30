@@ -5,14 +5,16 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let enemies = []
+let enemies = [];
 let player;
+let jumpHeight = 5;
+let gravity = 0.5;
+let groundLevel;
 
 function setup() {
 
   createCanvas(windowWidth, windowHeight);
-
-  playerPosition = createVector(width/2, height/2)
+  groundLevel = 3*height/4;
 
   player = {
 
@@ -30,6 +32,7 @@ function draw() {
   userInput();
   moveEnemy();
   display();
+  jump();
 }
 
 function mousePressed() {
@@ -44,6 +47,7 @@ function display() {
   rectMode(CENTER);
   noFill();
   rect(player.position.x, player.position.y, player.width, player.height);
+  line(0, groundLevel, width, groundLevel);
 
 
   for (let i=0; i<enemies.length; i++) {
@@ -66,6 +70,9 @@ function userInput() {
   if (keyIsDown(68)) { //d
     player.position.x += player.speed;
   }
+  if (keyIsDown(32)) { //space
+    player.position.y -= jumpHeight;
+  }
 }
 
 function spawnEnemy(x, y) {
@@ -78,7 +85,7 @@ function spawnEnemy(x, y) {
     color: "red",
 
     hi: function () {
-      return 'hi';
+      return "hi";
     }
 
   };
@@ -93,13 +100,22 @@ function moveEnemy() {
     enemies[i].position.y = lerp(enemies[i].position.y, player.position.y, enemies[i].speed);
 
     if (collision(player.position, enemies[i].position, player.size, enemies[i].size)) {
-      console.log('hit!');
-      enemies.splice(i, 1)
+      enemies.splice(i, 1);
     }
   }
 }  
 
 function collision(firstVector, secondVector, firstHitBox, secondHitBox) {
 
-  return (firstVector.dist(secondVector) < firstHitBox/2 + secondHitBox/2);
+  return firstVector.dist(secondVector) < firstHitBox/2 + secondHitBox/2;
+}
+
+function jump() {
+  if (player.position.y < groundLevel) {
+    jumpHeight -= gravity;
+    player.position.y -= jumpHeight;
+  }
+  else {
+    jumpHeight = 10;
+  }
 }
