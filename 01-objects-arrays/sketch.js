@@ -7,23 +7,22 @@
 
 let enemies = [];
 let player;
+let groundLevel;
 let thisJump = 0;
 let jumpHeight = 16;
 let gravity = 0.5;
 let jumping = true;
-let groundLevel;
 
 function setup() {
 
   createCanvas(windowWidth, windowHeight);
+
   groundLevel = 3*height/4;
 
   player = {
 
     position: createVector(width/2, height/2),
     size: 20,
-    width: 20,
-    height: 20,
     speed: 6,
     health: 5,
   };
@@ -34,6 +33,7 @@ function draw() {
   userInput();
   jump();
   moveEnemy();
+  checksAllCollisions();
   display();
 }
 
@@ -48,8 +48,13 @@ function display() {
 
   rectMode(CENTER);
   noFill();
-  rect(player.position.x, player.position.y, player.width, player.height);
+  rect(player.position.x, player.position.y, player.size, player.size);
+
   line(0, groundLevel, width, groundLevel);
+
+  textSize(30);
+  fill("black");
+  text("Health: " + player.health, 30, 40);
 
 
   for (let i=0; i<enemies.length; i++) {
@@ -82,10 +87,6 @@ function spawnEnemy(x, y) {
     size: 20,
     color: "red",
 
-    hi: function () {
-      return "hi";
-    }
-
   };
   enemies.push(newEnemy);
 }
@@ -97,15 +98,29 @@ function moveEnemy() {
     enemies[i].position.x = lerp(enemies[i].position.x, player.position.x, enemies[i].speed);
     enemies[i].position.y = lerp(enemies[i].position.y, player.position.y, enemies[i].speed);
 
-    if (collision(player.position, enemies[i].position, player.size, enemies[i].size)) {
-      enemies.splice(i, 1);
-    }
   }
 }  
 
 function collision(firstVector, secondVector, firstHitBox, secondHitBox) {
 
   return firstVector.dist(secondVector) < firstHitBox/2 + secondHitBox/2;
+}
+
+function checksAllCollisions() {
+  for (let i = 0; i < enemies.length; i ++) {
+
+    if (collision(player.position, enemies[i].position, player.size, enemies[i].size)) {
+
+      if (player.position.y < enemies[i].position.y) {
+        jumping = true;
+        thisJump = 3*jumpHeight/4;
+      }
+      else {
+        player.health -= 1;
+      }
+      enemies.splice(i, 1);
+    }
+  }
 }
 
 function jump() {
