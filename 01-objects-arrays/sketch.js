@@ -7,8 +7,10 @@
 
 let enemies = [];
 let player;
-let jumpHeight = 5;
+let thisJump = 0;
+let jumpHeight = 16;
 let gravity = 0.5;
+let jumping = true;
 let groundLevel;
 
 function setup() {
@@ -22,7 +24,7 @@ function setup() {
     size: 20,
     width: 20,
     height: 20,
-    speed: 3,
+    speed: 6,
     health: 5,
   };
 }
@@ -30,9 +32,9 @@ function setup() {
 function draw() {
 
   userInput();
+  jump();
   moveEnemy();
   display();
-  jump();
 }
 
 function mousePressed() {
@@ -58,20 +60,16 @@ function display() {
 
 function userInput() {
   
-  if (keyIsDown(87)) { //w
-    player.position.y -= player.speed;
-  }
-  if (keyIsDown(65)) { //a
+  if (keyIsDown(65) && player.position.x >= 0) { //a
     player.position.x -= player.speed;
   }
-  if (keyIsDown(83)) { //s
-    player.position.y += player.speed;
-  }
-  if (keyIsDown(68)) { //d
+
+  if (keyIsDown(68) && player.position.x <= width) { //d
     player.position.x += player.speed;
   }
-  if (keyIsDown(32)) { //space
-    player.position.y -= jumpHeight;
+  if (keyIsDown(32) && ! jumping) { //space
+    jumping = true;
+    thisJump = jumpHeight;
   }
 }
 
@@ -111,11 +109,19 @@ function collision(firstVector, secondVector, firstHitBox, secondHitBox) {
 }
 
 function jump() {
-  if (player.position.y < groundLevel) {
-    jumpHeight -= gravity;
-    player.position.y -= jumpHeight;
+
+  if (! jumping) {
+    player.position.y = groundLevel - player.size/2;
   }
+
   else {
-    jumpHeight = 10;
+    
+    player.position.y -= thisJump;
+    thisJump -= gravity;
+
+    if (player.position.y > groundLevel - player.size/2) {
+      jumping = false;
+    }
   }
+
 }
