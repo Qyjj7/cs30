@@ -14,11 +14,14 @@ let thisJump = 0;
 let jumpHeight = 16;
 let gravity = 0.5;
 let jumping = true;
+let gameRunning = true;
 
 function setup() {
 
   createCanvas(windowWidth, windowHeight);
-  setInterval(spawnEnemy,  1000)
+
+  setInterval(spawnEnemy,  1000);
+
 
   groundLevel = 3*height/4;
 
@@ -32,11 +35,15 @@ function setup() {
 
 function draw() {
 
-  userInput();
-  jump();
-  moveEnemy();
-  checksAllCollisions();
+  if (gameRunning) {
+    userInput();
+    jump();
+    moveEnemy();
+    checksAllCollisions();
+  }
+  checkGameOver();
   display();
+  
 }
 
 function display() {
@@ -51,8 +58,21 @@ function display() {
 
   textSize(30);
   fill("black");
+  textAlign(LEFT);
   text("Health: " + health, 30, 40);
   text("Score: " + score,  30, 80);
+
+  if (gameRunning === false) {
+    
+    textSize(30);
+    fill("black");
+    textAlign(CENTER);
+    text("GAME OVER", width/2, height/2);
+
+    textSize(15);
+    text("Press Enter to Play Again", width/2, height/2 + 20);
+  }
+
 
 
   for (let i=0; i<enemies.length; i++) {
@@ -78,7 +98,7 @@ function userInput() {
 
 function spawnEnemy() {
 
-  let x = random(0, width)
+  let x = random(0, width);
 
   let newEnemy = {
 
@@ -88,7 +108,10 @@ function spawnEnemy() {
     color: "red",
 
   };
-  enemies.push(newEnemy);
+
+  if (gameRunning) {
+    enemies.push(newEnemy);
+  }
 }
 
 function moveEnemy() {
@@ -140,4 +163,19 @@ function jump() {
     }
   }
 
+}
+
+function checkGameOver() {
+  if (health < 1) {
+    gameRunning = false;
+  }
+
+  if (keyIsDown(13) && ! gameRunning) { //Enter
+    health = 5;
+    score = 0;
+    enemies = [];
+    player.position.x = width/2;
+    player.position.y = height/2;
+    gameRunning = true;
+  }
 }
