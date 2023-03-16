@@ -18,6 +18,7 @@ let jumping = true;
 function setup() {
 
   createCanvas(windowWidth, windowHeight);
+  setInterval(spawnEnemy,  1000)
 
   groundLevel = 3*height/4;
 
@@ -36,11 +37,6 @@ function draw() {
   moveEnemy();
   checksAllCollisions();
   display();
-}
-
-function mousePressed() {
-
-  spawnEnemy();
 }
 
 function display() {
