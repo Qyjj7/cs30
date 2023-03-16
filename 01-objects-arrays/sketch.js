@@ -8,6 +8,8 @@
 let enemies = [];
 let player;
 let groundLevel;
+let score  = 0;
+let health = 5;
 let thisJump = 0;
 let jumpHeight = 16;
 let gravity = 0.5;
@@ -24,7 +26,6 @@ function setup() {
     position: createVector(width/2, height/2),
     size: 20,
     speed: 6,
-    health: 5,
   };
 }
 
@@ -39,7 +40,7 @@ function draw() {
 
 function mousePressed() {
 
-  spawnEnemy(mouseX, mouseY);
+  spawnEnemy();
 }
 
 function display() {
@@ -54,7 +55,8 @@ function display() {
 
   textSize(30);
   fill("black");
-  text("Health: " + player.health, 30, 40);
+  text("Health: " + health, 30, 40);
+  text("Score: " + score,  30, 80);
 
 
   for (let i=0; i<enemies.length; i++) {
@@ -78,11 +80,13 @@ function userInput() {
   }
 }
 
-function spawnEnemy(x, y) {
+function spawnEnemy() {
+
+  let x = random(0, width)
 
   let newEnemy = {
 
-    position: createVector(x, y),
+    position: createVector(x, 0),
     speed: 0.03,
     size: 20,
     color: "red",
@@ -114,9 +118,10 @@ function checksAllCollisions() {
       if (player.position.y < enemies[i].position.y) {
         jumping = true;
         thisJump = 3*jumpHeight/4;
+        score ++;
       }
       else {
-        player.health -= 1;
+        health --;
       }
       enemies.splice(i, 1);
     }
