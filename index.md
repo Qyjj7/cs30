@@ -11,3 +11,4 @@
 - [Bouncing Balls](bouncing-balls)
 - [Vectors](vectors)
 - [Perlin Noise](perlin-noise)
+- [Perlin and Timing](perlin-timing)
