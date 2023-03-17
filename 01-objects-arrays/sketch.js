@@ -20,7 +20,7 @@ function setup() {
 
   createCanvas(windowWidth, windowHeight);
 
-  setInterval(spawnEnemy,  1000);
+  setInterval(spawnEnemy,  1200);
 
 
   groundLevel = 3*height/4;
@@ -103,7 +103,7 @@ function spawnEnemy() {
   let newEnemy = {
 
     position: createVector(x, 0),
-    speed: 0.03,
+    speed: 5,
     size: 20,
     color: "red",
 
@@ -118,9 +118,8 @@ function moveEnemy() {
 
   for (let i = 0; i < enemies.length; i ++) {
 
-    enemies[i].position.x = lerp(enemies[i].position.x, player.position.x, enemies[i].speed);
-    enemies[i].position.y = lerp(enemies[i].position.y, player.position.y, enemies[i].speed);
-
+    let lerpAmount = enemies[i].speed/enemies[i].position.dist(player.position)
+    enemies[i].position.lerp(player.position, lerpAmount)
   }
 }  
 
