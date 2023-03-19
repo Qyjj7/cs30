@@ -22,7 +22,6 @@ function setup() {
 
   setInterval(spawnEnemy,  1200);
 
-
   groundLevel = 3*height/4;
 
   player = {
@@ -50,15 +49,12 @@ function display() {
 
   background(220);
 
-  //draws player
   rectMode(CENTER);
   noFill();
   rect(player.position.x, player.position.y, player.size, player.size);
 
-  //draws floor
   line(0, groundLevel, width, groundLevel);
 
-  //draws health and score text
   textSize(30);
   fill("black");
   textAlign(LEFT);
@@ -67,7 +63,6 @@ function display() {
 
   if (gameRunning === false) {
 
-    //draws game over text
     textSize(30);
     fill("black");
     textAlign(CENTER);
@@ -78,10 +73,8 @@ function display() {
   }
 
 
-
   for (let i=0; i<enemies.length; i++) {
 
-    //draws enemies
     fill(enemies[i].color);
     circle(enemies[i].position.x, enemies[i].position.y, enemies[i].size);
   }
@@ -115,7 +108,6 @@ function spawnEnemy() {
 
   };
 
-  //adds new enemy to the game screen
   if (gameRunning) {
     enemies.push(newEnemy);
   }
@@ -125,44 +117,26 @@ function moveEnemy() {
 
   for (let i = 0; i < enemies.length; i ++) {
 
-<<<<<<< HEAD
-    //enemy travels a fraction of the distance to the player equal to lerpAmount
     let lerpAmount = enemies[i].speed/enemies[i].position.dist(player.position);
     enemies[i].position.lerp(player.position, lerpAmount);
   }
 }  
 
-=======
-    let lerpAmount = enemies[i].speed/enemies[i].position.dist(player.position)
-    enemies[i].position.lerp(player.position, lerpAmount)
-  }
-}  
-
-function collision(firstVector, secondVector, firstHitBox, secondHitBox) {
-
-  return firstVector.dist(secondVector) < firstHitBox/2 + secondHitBox/2;
-}
-
->>>>>>> parent of 368b59d (organize)
 function checksAllCollisions() {
   for (let i = 0; i < enemies.length; i ++) {
 
-    //if player touches enemy
-    if (player.position.dist(enemies[i].position) < player.size/2, enemies[i].size/2) {
+    if (player.position.dist(enemies[i].position) < player.size/2 + enemies[i].size/2) {
 
-      //bounce if player is above enemy
       if (player.position.y < enemies[i].position.y) {
         jumping = true;
         thisJump = 3*jumpHeight/4;
         score ++;
       }
 
-      //player takes damage
       else {
         health --;
       }
 
-      //enemy dies
       enemies.splice(i, 1);
     }
   }
@@ -172,17 +146,14 @@ function jump() {
 
   if (! jumping) {
 
-    //stops player from landing below the ground
     player.position.y = groundLevel - player.size/2;
   }
 
   else {
     
-    //simulates acceleration by decreasing height jumped by a constant
     player.position.y -= thisJump;
     thisJump -= gravity;
 
-    //ends jump once ground is reached
     if (player.position.y > groundLevel - player.size/2) {
       jumping = false;
     }
@@ -191,19 +162,13 @@ function jump() {
 }
 
 function checkGameOver() {
-<<<<<<< HEAD
 
   if (health <= 0) {
-    //game stops if player dies
-=======
-  if (health < 1) {
->>>>>>> parent of 368b59d (organize)
     gameRunning = false;
   }
 
   if (keyIsDown(13) && ! gameRunning) { //Enter
 
-    //resets game variables
     health = 5;
     score = 0;
     enemies = [];
