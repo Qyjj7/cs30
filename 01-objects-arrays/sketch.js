@@ -5,7 +5,6 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-
 let enemies = [];
 let player;
 let groundLevel;
@@ -17,12 +16,12 @@ let gravity = 0.5;
 let jumping = true;
 let gameRunning = true;
 
-
 function setup() {
 
   createCanvas(windowWidth, windowHeight);
 
   setInterval(spawnEnemy,  1200);
+
 
   groundLevel = 3*height/4;
 
@@ -34,7 +33,6 @@ function setup() {
   };
 }
 
-
 function draw() {
 
   if (gameRunning) {
@@ -45,8 +43,8 @@ function draw() {
   }
   checkGameOver();
   display();
+  
 }
-
 
 function display() {
 
@@ -79,6 +77,8 @@ function display() {
     text("Press Enter to Play Again", width/2, height/2 + 20);
   }
 
+
+
   for (let i=0; i<enemies.length; i++) {
 
     //draws enemies
@@ -86,7 +86,6 @@ function display() {
     circle(enemies[i].position.x, enemies[i].position.y, enemies[i].size);
   }
 }
-
 
 function userInput() {
   
@@ -102,7 +101,6 @@ function userInput() {
     thisJump = jumpHeight;
   }
 }
-
 
 function spawnEnemy() {
 
@@ -123,19 +121,30 @@ function spawnEnemy() {
   }
 }
 
-
 function moveEnemy() {
 
   for (let i = 0; i < enemies.length; i ++) {
 
+<<<<<<< HEAD
     //enemy travels a fraction of the distance to the player equal to lerpAmount
     let lerpAmount = enemies[i].speed/enemies[i].position.dist(player.position);
     enemies[i].position.lerp(player.position, lerpAmount);
   }
 }  
 
-function checksAllCollisions() {
+=======
+    let lerpAmount = enemies[i].speed/enemies[i].position.dist(player.position)
+    enemies[i].position.lerp(player.position, lerpAmount)
+  }
+}  
 
+function collision(firstVector, secondVector, firstHitBox, secondHitBox) {
+
+  return firstVector.dist(secondVector) < firstHitBox/2 + secondHitBox/2;
+}
+
+>>>>>>> parent of 368b59d (organize)
+function checksAllCollisions() {
   for (let i = 0; i < enemies.length; i ++) {
 
     //if player touches enemy
@@ -159,7 +168,6 @@ function checksAllCollisions() {
   }
 }
 
-
 function jump() {
 
   if (! jumping) {
@@ -182,11 +190,14 @@ function jump() {
 
 }
 
-
 function checkGameOver() {
+<<<<<<< HEAD
 
   if (health <= 0) {
     //game stops if player dies
+=======
+  if (health < 1) {
+>>>>>>> parent of 368b59d (organize)
     gameRunning = false;
   }
 
