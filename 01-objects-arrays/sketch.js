@@ -25,6 +25,8 @@ function setup() {
 
   setInterval(spawnEnemy,  1200);
 
+  highScore = getItem('high score');
+
   groundLevel = 3*height/4;
 
   player = {
@@ -176,7 +178,14 @@ function jump() {
 
 function checkGameOver() {
 
-  if (health <= 0) {
+  if (health <= 0 && score > highScore) {
+    gameRunning = false;
+    highScore = score;
+    clearStorage();
+    storeItem('high score', highScore);
+  }
+
+  else if (health <= 0) {
     gameRunning = false;
   }
 
@@ -184,6 +193,7 @@ function checkGameOver() {
 
     health = 5;
     score = 0;
+    highScore = getItem('high score');
     enemies = [];
     player.position.x = width/2;
     player.position.y = height/2;
