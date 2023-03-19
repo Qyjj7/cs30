@@ -8,13 +8,16 @@
 let enemies = [];
 let player;
 let groundLevel;
-let score  = 0;
+let score = 0;
+let highScore = 0;
 let health = 5;
 let thisJump = 0;
 let jumpHeight = 14;
 let gravity = 0.5;
 let jumping = true;
 let gameRunning = true;
+
+
 
 function setup() {
 
@@ -32,6 +35,7 @@ function setup() {
   };
 }
 
+
 function draw() {
 
   if (gameRunning) {
@@ -44,6 +48,7 @@ function draw() {
   display();
   
 }
+
 
 function display() {
 
@@ -60,6 +65,8 @@ function display() {
   textAlign(LEFT);
   text("Health: " + health, 30, 40);
   text("Score: " + score,  30, 80);
+  text("High Score: " + highScore,  30, 120);
+  
 
   if (gameRunning === false) {
 
@@ -80,6 +87,7 @@ function display() {
   }
 }
 
+
 function userInput() {
   
   if (keyIsDown(65) && player.position.x >= 0) { //a
@@ -94,6 +102,7 @@ function userInput() {
     thisJump = jumpHeight;
   }
 }
+
 
 function spawnEnemy() {
 
@@ -113,6 +122,7 @@ function spawnEnemy() {
   }
 }
 
+
 function moveEnemy() {
 
   for (let i = 0; i < enemies.length; i ++) {
@@ -121,6 +131,7 @@ function moveEnemy() {
     enemies[i].position.lerp(player.position, lerpAmount);
   }
 }  
+
 
 function checksAllCollisions() {
   for (let i = 0; i < enemies.length; i ++) {
@@ -142,6 +153,7 @@ function checksAllCollisions() {
   }
 }
 
+
 function jump() {
 
   if (! jumping) {
@@ -160,6 +172,7 @@ function jump() {
   }
 
 }
+
 
 function checkGameOver() {
 
