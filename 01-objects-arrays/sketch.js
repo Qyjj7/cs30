@@ -1,9 +1,14 @@
-// Project Title
-// Your Name
-// Date
+// Objects and Arrays
+// Riley Morrissey
+// March 20, 2023
+//
+// Description:
+// A and D for left and right, SPACE to jump
+// Jump on top of enemies to destroy them
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// 
+
 
 let enemies = [];
 let player;
@@ -12,11 +17,11 @@ let score = 0;
 let highScore = 0;
 let health = 5;
 let thisJump = 0;
-let jumpHeight = 14;
-let gravity = 0.5;
 let jumping = true;
 let gameRunning = true;
 
+const JUMPHEIGHT = 14;
+const GRAVITY = 0.5;
 
 
 function setup() {
@@ -25,12 +30,13 @@ function setup() {
 
   setInterval(spawnEnemy,  1200);
 
-  highScore = getItem('high score');
+  //gets the highscore saved in browser
+  highScore = getItem("high score");
 
   groundLevel = 3*height/4;
 
+  //creates player object
   player = {
-
     position: createVector(width/2, height/2),
     size: 20,
     speed: 6,
@@ -46,6 +52,7 @@ function draw() {
     moveEnemy();
     checksAllCollisions();
   }
+  //functions that must always run
   checkGameOver();
   display();
   
@@ -56,12 +63,15 @@ function display() {
 
   background(220);
 
+  //draw player
   rectMode(CENTER);
   noFill();
   rect(player.position.x, player.position.y, player.size, player.size);
 
+  //draw ground
   line(0, groundLevel, width, groundLevel);
 
+  //draw health, score
   textSize(30);
   fill("black");
   textAlign(LEFT);
@@ -69,9 +79,8 @@ function display() {
   text("Score: " + score,  30, 80);
   text("High Score: " + highScore,  30, 120);
   
-
+  //draw game over text
   if (gameRunning === false) {
-
     textSize(30);
     fill("black");
     textAlign(CENTER);
@@ -81,7 +90,7 @@ function display() {
     text("Press Enter to Play Again", width/2, height/2 + 20);
   }
 
-
+  //draw enemies
   for (let i=0; i<enemies.length; i++) {
 
     fill(enemies[i].color);
@@ -101,22 +110,19 @@ function userInput() {
   }
   if (keyIsDown(32) && ! jumping) { //space
     jumping = true;
-    thisJump = jumpHeight;
+    thisJump = JUMPHEIGHT;
   }
 }
 
 
 function spawnEnemy() {
 
-  let x = random(0, width);
-
+  //creates enemy object and pushes to list
   let newEnemy = {
-
-    position: createVector(x, 0),
+    position: createVector(random(0, width), 0),
     speed: 6,
     size: 20,
     color: "red",
-
   };
 
   if (gameRunning) {
@@ -127,6 +133,8 @@ function spawnEnemy() {
 
 function moveEnemy() {
 
+  //lerpAmount is the fraction of distance to travel by
+  //ensures that enemy always travels by its constant speed
   for (let i = 0; i < enemies.length; i ++) {
 
     let lerpAmount = enemies[i].speed/enemies[i].position.dist(player.position);
@@ -136,13 +144,16 @@ function moveEnemy() {
 
 
 function checksAllCollisions() {
+
   for (let i = 0; i < enemies.length; i ++) {
 
+    //hitboxes are circles for simplicity, even player
     if (player.position.dist(enemies[i].position) < player.size/2 + enemies[i].size/2) {
 
+      //reset the jump to stay airborne
       if (player.position.y < enemies[i].position.y) {
         jumping = true;
-        thisJump = 3*jumpHeight/4;
+        thisJump = 3*JUMPHEIGHT/4;
         score ++;
       }
 
@@ -150,6 +161,7 @@ function checksAllCollisions() {
         health --;
       }
 
+      //deletes enemy
       enemies.splice(i, 1);
     }
   }
@@ -159,14 +171,14 @@ function checksAllCollisions() {
 function jump() {
 
   if (! jumping) {
-
+    //ensures player does not fall through ground
     player.position.y = groundLevel - player.size/2;
   }
 
   else {
-    
+    //fall faster and faster each frame
     player.position.y -= thisJump;
-    thisJump -= gravity;
+    thisJump -= GRAVITY;
 
     if (player.position.y > groundLevel - player.size/2) {
       jumping = false;
@@ -177,12 +189,13 @@ function jump() {
 
 
 function checkGameOver() {
-
+  
   if (health <= 0 && score > highScore) {
     gameRunning = false;
     highScore = score;
+    //stores the new high score in browser storage
     clearStorage();
-    storeItem('high score', highScore);
+    storeItem("high score", highScore);
   }
 
   else if (health <= 0) {
@@ -190,13 +203,13 @@ function checkGameOver() {
   }
 
   if (keyIsDown(13) && ! gameRunning) { //Enter
-
+    //resets game
     health = 5;
     score = 0;
-    highScore = getItem('high score');
     enemies = [];
     player.position.x = width/2;
     player.position.y = height/2;
     gameRunning = true;
+    highScore = getItem("high score");
   }
 }
