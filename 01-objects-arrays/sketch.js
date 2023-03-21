@@ -7,7 +7,12 @@
 // Jump on top of enemies to destroy them
 //
 // Extra for Experts:
-// 
+// Researched and implemented certain p5.js features that were not taught in class
+// -lerp() for enemy movement, expanding beyond the basic use to better suit the game
+// -getItem() and others relating to storage to permanently save user's high score
+// -text() to display text
+// -p5.Vector to do math and keep track of positions on screen more conveniently 
+
 
 
 let enemies = [];
@@ -30,12 +35,12 @@ function setup() {
 
   setInterval(spawnEnemy,  1200);
 
-  //gets the highscore saved in browser
+  //gets the highscore saved in browser storage
   highScore = getItem("high score");
 
   groundLevel = 3*height/4;
 
-  //creates player object
+  //player object only needs to be made once
   player = {
     position: createVector(width/2, height/2),
     size: 20,
@@ -117,7 +122,7 @@ function userInput() {
 
 function spawnEnemy() {
 
-  //creates enemy object and pushes to list
+  //allows multiple enemy objects to have unique positions
   let newEnemy = {
     position: createVector(random(0, width), 0),
     speed: 6,
@@ -133,7 +138,7 @@ function spawnEnemy() {
 
 function moveEnemy() {
 
-  //lerpAmount is the fraction of distance to travel by
+  //lerpAmount is the fraction of distance to travel by each frame
   //ensures that enemy always travels by its constant speed
   for (let i = 0; i < enemies.length; i ++) {
 
@@ -147,7 +152,7 @@ function checksAllCollisions() {
 
   for (let i = 0; i < enemies.length; i ++) {
 
-    //hitboxes are circles for simplicity, even player
+    //hitboxes are circles for simplicity, even player's
     if (player.position.dist(enemies[i].position) < player.size/2 + enemies[i].size/2) {
 
       //reset the jump to stay airborne
@@ -161,7 +166,6 @@ function checksAllCollisions() {
         health --;
       }
 
-      //deletes enemy
       enemies.splice(i, 1);
     }
   }
@@ -171,12 +175,12 @@ function checksAllCollisions() {
 function jump() {
 
   if (! jumping) {
-    //ensures player does not fall through ground
+    //ensures player does not fall through the ground
     player.position.y = groundLevel - player.size/2;
   }
 
   else {
-    //fall faster and faster each frame
+    //simulates gravity
     player.position.y -= thisJump;
     thisJump -= GRAVITY;
 
@@ -202,8 +206,8 @@ function checkGameOver() {
     gameRunning = false;
   }
 
+  //resets game
   if (keyIsDown(13) && ! gameRunning) { //Enter
-    //resets game
     health = 5;
     score = 0;
     enemies = [];
