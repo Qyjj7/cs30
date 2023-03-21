@@ -12,3 +12,4 @@
 - [Vectors](vectors)
 - [Perlin Noise](perlin-noise)
 - [Perlin and Timing](perlin-timing)
+- [Make Blue](make-blue)
