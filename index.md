@@ -13,3 +13,4 @@
 - [Perlin Noise](perlin-noise)
 - [Perlin and Timing](perlin-timing)
 - [Make Blue](make-blue)
+- [Game of Life](game-of-life)
