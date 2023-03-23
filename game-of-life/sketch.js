@@ -18,6 +18,8 @@ function setup() {
 
   grid = createRandom2dArray(ROWS, COLS);
 
+  setInterval(auto, 600);
+
   if (width < height) {
     cellSize = width/COLS;
   }
@@ -29,6 +31,9 @@ function setup() {
 function draw() {
   background(220);
   displayGrid(grid);
+}
+
+function auto() {
 
   if (autoUpdate) {
     grid = updateGrid();
