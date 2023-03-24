@@ -8,19 +8,16 @@
 
 const ROWS = 15;
 const COLS = 15;
+const TILETYPES = 4;
 let grid;
 let cellSize;
 let tilesList = [];
 
-let NorthSouthCorridor;
-let EastWestCorridor;
 
 
 function setup() {
 
   createCanvas(windowWidth, windowHeight);
-
-  createTileTypes();
 
   grid = create2dArray(ROWS, COLS);
 
@@ -41,22 +38,78 @@ function draw() {
 }
 
 
-function createTileTypes() {
+function createTile(desiredTile) {
 
-  NorthSouthCorridor = {
-    color: "blue",
-  };
-  tilesList.push(NorthSouthCorridor);
+  if (desiredTile === 0) {
 
-  EastWestCorridor = {
-    color: "red",
-  };
-  tilesList.push(EastWestCorridor);
+    let startingTile = {
+
+      identity: 0,
+      color: "white",
+      north: "closed",
+      south: "open",
+      east: "closed",
+      west: "closed",
+    };
+    return startingTile;
+  }
+
+  if (desiredTile === 1) {
+
+    let deadEnd = {
+
+      identity: 1,
+      color: "black",
+      north: "closed",
+      south: "closed",
+      east: "closed",
+      west: "closed",
+    };
+    return deadEnd;
+  }
+  
+  if (desiredTile === 2) {
+
+    let NorthSouthCorridor = {
+
+      identity: 2,
+      color: "blue",
+      north: "open",
+      south: "open",
+      east: "closed",
+      west: "closed",
+    };
+    return NorthSouthCorridor;
+  }
+
+  if (desiredTile === 3) {
+
+    let EastWestCorridor = {
+
+      identity: 3,
+      color: "red",
+      north: "closed",
+      south: "closed",
+      east: "open",
+      west: "open",
+    };
+    return EastWestCorridor;
+  }
 }
 
-function randomTile() {
-  return tilesList[random(tilesList.length-1)];
+
+function randomTile(options) {
+
+  let randomIndex = (Math.floor(random(options.length)));
+  let chosenTile = createTile(options[randomIndex]);
+
+  if (options === []) {
+    chosenTile = createTile(1)
+  }
+
+  return chosenTile;
 }
+
 
 function displayGrid(grid) {
 
@@ -66,7 +119,7 @@ function displayGrid(grid) {
       if (grid[y][x] !== "blank") {
         fill(grid[y][x].color);
       }
-      if (grid[y][x] === "blank") {
+      else {
         noFill();
       }
       rect(x*cellSize, y*cellSize, cellSize, cellSize);
@@ -84,25 +137,52 @@ function create2dArray(ROWS, COLS) {
       newGrid[y].push("blank");
     }
   }
+  newGrid[0][7] = createTile(0);
   return newGrid;
 }
 
 
-function exploreCell(x, y) {
+function exploreCell(thisY, thisX) {
 
-  if (x >= 0 && x < COLS && y >= 0 && y < ROWS) {
+  let validTiles = []
 
-    if (grid[y][x] === "blank"){
-      grid[y][x] = randomTile(); 
-    }
+  for (let i = 2; i < TILETYPES; i++) {
+    let thisTile = createTile(i);
+
+    validTiles.push(i);
+    
   }
+
+  console.log(validTiles)
+  grid[thisY][thisX] = randomTile(validTiles); 
+  
 }
 
 
 function mousePressed() {
 
-  let x = Math.floor(mouseX/cellSize);
-  let y = Math.floor(mouseY/cellSize);
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x ++) {
 
-  exploreCell(x, y);
+      if (grid[y][x] !== "blank") {
+
+        if (grid[y][x].north === "open") {
+          exploreCell(y-1, x);
+          grid[y][x].north = "explored";
+        }
+        if (grid[y][x].south === "open") {
+          exploreCell(y+1, x);
+          grid[y][x].south = "explored";
+        }
+        if (grid[y][x].east === "open") {
+          exploreCell(y, x+1);
+          grid[y][x].east = "explored";
+        }
+        if (grid[y][x].west === "open") {
+          exploreCell(y, x-1);
+          grid[y][x].west = "explored";
+        }
+      }
+    }
+  }
 }
