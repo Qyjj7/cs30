@@ -45,6 +45,7 @@ function createTile(desiredTile) {
     let startingTile = {
 
       identity: 0,
+      new: false,
       color: "white",
       north: "closed",
       south: "open",
@@ -59,6 +60,7 @@ function createTile(desiredTile) {
     let deadEnd = {
 
       identity: 1,
+      new: true,
       color: "black",
       north: "closed",
       south: "closed",
@@ -73,6 +75,7 @@ function createTile(desiredTile) {
     let NorthSouthCorridor = {
 
       identity: 2,
+      new: true,
       color: "blue",
       north: "open",
       south: "open",
@@ -87,6 +90,7 @@ function createTile(desiredTile) {
     let EastWestCorridor = {
 
       identity: 3,
+      new: true,
       color: "red",
       north: "closed",
       south: "closed",
@@ -100,11 +104,11 @@ function createTile(desiredTile) {
 
 function randomTile(options) {
 
-  let randomIndex = (Math.floor(random(options.length)));
+  let randomIndex = Math.floor(random(options.length));
   let chosenTile = createTile(options[randomIndex]);
 
   if (options === []) {
-    chosenTile = createTile(1)
+    chosenTile = createTile(1);
   }
 
   return chosenTile;
@@ -144,7 +148,7 @@ function create2dArray(ROWS, COLS) {
 
 function exploreCell(thisY, thisX) {
 
-  let validTiles = []
+  let validTiles = [];
 
   for (let i = 2; i < TILETYPES; i++) {
     let thisTile = createTile(i);
@@ -153,7 +157,7 @@ function exploreCell(thisY, thisX) {
     
   }
 
-  console.log(validTiles)
+  console.log(validTiles);
   grid[thisY][thisX] = randomTile(validTiles); 
   
 }
@@ -164,7 +168,7 @@ function mousePressed() {
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x ++) {
 
-      if (grid[y][x] !== "blank") {
+      if (grid[y][x] !== "blank" && ! grid[y][x].new) {
 
         if (grid[y][x].north === "open") {
           exploreCell(y-1, x);
@@ -183,6 +187,7 @@ function mousePressed() {
           grid[y][x].west = "explored";
         }
       }
+      grid[y][x].new = false;
     }
   }
 }

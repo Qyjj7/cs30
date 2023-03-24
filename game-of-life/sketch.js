@@ -6,19 +6,24 @@
 // - describe what you did to take this project "above and beyond"
 
 
-const ROWS = 10;
-const COLS = 10;
+const ROWS = 40;
+const COLS = 40;
 let grid;
 let cellSize;
 let autoUpdate = false;
+let gosperGun;
 
+
+function preload() {
+  gosperGun = loadJSON("gosper.json");
+}
 function setup() {
 
   createCanvas(windowWidth, windowHeight);
 
   grid = createRandom2dArray(ROWS, COLS);
 
-  setInterval(auto, 600);
+  setInterval(auto, 400);
 
   if (width < height) {
     cellSize = width/COLS;
@@ -53,6 +58,9 @@ function keyTyped() {
   }
   else if (key === "a") {
     autoUpdate = !autoUpdate;
+  }
+  else if (key === "g") {
+    grid = gosperGun;
   }
 }
 
