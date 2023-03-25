@@ -8,7 +8,7 @@
 
 const ROWS = 15;
 const COLS = 15;
-const TILETYPES = 3;
+const TILETYPES = 8;
 
 let grid;
 let cellSize;
@@ -47,10 +47,10 @@ function createTile(desiredTile) {
       identity: "blank",
       new: false,
       color: 220,
-      north: "none",
-      south: "none",
-      east: "none",
-      west: "none",
+      north: "blank",
+      south: "blank",
+      east: "blank",
+      west: "blank",
     };
     return blank;
   }
@@ -114,6 +114,81 @@ function createTile(desiredTile) {
     };
     return EastWestCorridor;
   }
+
+  if (desiredTile === 3) {
+
+    let NorthEastCorner = {
+
+      identity: 3,
+      new: true,
+      color: "green",
+      north: "open",
+      south: "closed",
+      east: "open",
+      west: "closed",
+    };
+    return NorthEastCorner;
+  }
+
+  if (desiredTile === 4) {
+
+    let SouthEastCorner = {
+
+      identity: 4,
+      new: true,
+      color: "orange",
+      north: "closed",
+      south: "open",
+      east: "open",
+      west: "closed",
+    };
+    return SouthEastCorner;
+  }
+    
+    if (desiredTile === 5) {
+
+      let SouthWestCorner = {
+  
+        identity: 5,
+        new: true,
+        color: "purple",
+        north: "closed",
+        south: "open",
+        east: "closed",
+        west: "open",
+      };
+      return SouthWestCorner;
+    }
+
+  if (desiredTile === 6) {
+
+    let NorthWestCorner = {
+
+      identity: 6,
+      new: true,
+      color: "yellow",
+      north: "open",
+      south: "closed",
+      east: "closed",
+      west: "open",
+    };
+    return NorthWestCorner;
+  }
+
+  if (desiredTile === 7) {
+
+    let FourWay = {
+
+      identity: 7,
+      new: true,
+      color: "pink",
+      north: "open",
+      south: "open",
+      east: "open",
+      west: "open",
+    };
+    return FourWay;
+  }
 }
 
 
@@ -163,73 +238,40 @@ function exploreCell(y, x) {
   
   if (grid[y][x].identity === "blank") {
 
-    for (let i = 0; i < TILETYPES; i++) {
+    for (let i = 1; i < TILETYPES; i++) {
       let checklist = 0;
       let tile = createTile(i);
       
-      if (tile.north === grid[y-1][x].south) {
+      if (tile.north === grid[y-1][x].south || grid[y-1][x].identity === "blank") {
         checklist ++;
       }
-      if (tile.south === grid[y+1][x].north) {
+      if (tile.south === grid[y+1][x].north || grid[y+1][x].identity === "blank") {
         checklist ++;
       }
-      if (tile.east === grid[y][x+1].west) {
+      if (tile.east === grid[y][x+1].west || grid[y][x+1].identity === "blank") {
         checklist ++;
       }
-      if (tile.west === grid[y][x-1].east) {
+      if (tile.west === grid[y][x-1].east || grid[y][x-1].identity === "blank") {
         checklist ++;
       }
       if (checklist === 4) {
         validTiles.push(i);
       }
     }
+
+    if (validTiles.length === 0) {
+      validTiles.push(0);
+    }
+    console.log(validTiles)
     grid[y][x] = randomTile(validTiles);
   }
-
-/*   let rules = [];
-  let validTiles = [];
-
-  if (grid[y-1][x].south !== "closed") {
-    rules.push(grid[y-1][x].south)
-  }
-  if (grid[y+1][x].north !== "closed") {
-    rules.push(grid[y+1][x].north)
-  }
-  if (grid[y][x+1].west !== "closed") {
-    rules.push(grid[y][x+1].west)
-  }
-  if (grid[y][x-1].east !== "closed") {
-    rules.push(grid[y][x-1].east)
-  }
-
-  for (let i = 2; i < TILETYPES; i++) {
-    let tile = createTile(i);
-    let directionTile = [tile.north, tile.south, tile.east, tile.west];
-    for (let j = 0; j < rules.length; j++){
-      for (let k = 0; k < directionTile.length; k++) {
-        if (rules[j] === directionTile[k]) {
-          console.log(rules[j]);
-          console.log(directionTile[k]);
-          validTiles.push(i);
-        }
-      }  
-    }
-  }
-
-  console.log(validTiles);
-  grid[y][x] = randomTile(validTiles); 
-   */
 }
 
 
-function randomTile(options) {
+function randomTile(validTiles) {
 
-  let randomIndex = Math.floor(random(options.length));
-  let chosenTile = createTile(options[randomIndex]);
-
-  if (options === []) {
-    chosenTile = createTile(1);
-  }
+  let randomIndex = Math.floor(random(validTiles.length));
+  let chosenTile = createTile(validTiles[randomIndex]);
 
   return chosenTile;
 }
@@ -240,24 +282,23 @@ function mousePressed() {
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
 
-      console.log(grid[y][x]);
       if (grid[y][x].identity !== "blank" && ! grid[y][x].new) {
 
         if (grid[y][x].north === "open") {
           exploreCell(y-1, x);
-          grid[y][x].north = "explored";
+          //grid[y][x].north = "explored";
         }
         if (grid[y][x].south === "open") {
           exploreCell(y+1, x);
-          grid[y][x].south = "explored";
+          //grid[y][x].south = "explored";
         }
         if (grid[y][x].east === "open") {
           exploreCell(y, x+1);
-          grid[y][x].east = "explored";
+          //grid[y][x].east = "explored";
         }
         if (grid[y][x].west === "open") {
           exploreCell(y, x-1);
-          grid[y][x].west = "explored";
+          //grid[y][x].west = "explored";
         }
       }
     }
