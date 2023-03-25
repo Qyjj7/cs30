@@ -8,10 +8,10 @@
 
 const ROWS = 15;
 const COLS = 15;
-const TILETYPES = 4;
+const TILETYPES = 3;
+
 let grid;
 let cellSize;
-let tilesList = [];
 
 
 
@@ -40,11 +40,26 @@ function draw() {
 
 function createTile(desiredTile) {
 
-  if (desiredTile === 0) {
+  if (desiredTile === "blank") {
+
+    let blank = {
+
+      identity: "blank",
+      new: false,
+      color: 220,
+      north: "none",
+      south: "none",
+      east: "none",
+      west: "none",
+    };
+    return blank;
+  }
+
+  if (desiredTile === "starting tile") {
 
     let startingTile = {
 
-      identity: 0,
+      identity: "starting tile",
       new: false,
       color: "white",
       north: "closed",
@@ -55,11 +70,11 @@ function createTile(desiredTile) {
     return startingTile;
   }
 
-  if (desiredTile === 1) {
+  if (desiredTile === 0) {
 
     let deadEnd = {
 
-      identity: 1,
+      identity: 0,
       new: true,
       color: "black",
       north: "closed",
@@ -70,11 +85,11 @@ function createTile(desiredTile) {
     return deadEnd;
   }
   
-  if (desiredTile === 2) {
+  if (desiredTile === 1) {
 
     let NorthSouthCorridor = {
 
-      identity: 2,
+      identity: 1,
       new: true,
       color: "blue",
       north: "open",
@@ -85,11 +100,11 @@ function createTile(desiredTile) {
     return NorthSouthCorridor;
   }
 
-  if (desiredTile === 3) {
+  if (desiredTile === 2) {
 
     let EastWestCorridor = {
 
-      identity: 3,
+      identity: 2,
       new: true,
       color: "red",
       north: "closed",
@@ -102,25 +117,12 @@ function createTile(desiredTile) {
 }
 
 
-function randomTile(options) {
-
-  let randomIndex = Math.floor(random(options.length));
-  let chosenTile = createTile(options[randomIndex]);
-
-  if (options === []) {
-    chosenTile = createTile(1);
-  }
-
-  return chosenTile;
-}
-
-
 function displayGrid(grid) {
 
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x ++) {
 
-      if (grid[y][x] !== "blank") {
+      if (grid[y][x].identity !== "blank") {
         fill(grid[y][x].color);
       }
       else {
@@ -138,37 +140,108 @@ function create2dArray(ROWS, COLS) {
   for (let y = 0; y < ROWS; y++) {
     newGrid.push([]);
     for (let x = 0; x < COLS; x ++) {
-      newGrid[y].push("blank");
+      newGrid[y].push(createTile("blank"));
     }
   }
-  newGrid[0][7] = createTile(0);
+  
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      if (y === 0 || y === ROWS-1 || x === 0 || x === COLS-1) {
+        newGrid[y][x] = createTile(0);
+      }
+    }
+  }
+
+  newGrid[1][7] = createTile("starting tile");
   return newGrid;
 }
 
 
-function exploreCell(thisY, thisX) {
+function exploreCell(y, x) {
 
   let validTiles = [];
+  
+  if (grid[y][x].identity === "blank") {
+
+    for (let i = 0; i < TILETYPES; i++) {
+      let checklist = 0;
+      let tile = createTile(i);
+      
+      if (tile.north === grid[y-1][x].south) {
+        checklist ++;
+      }
+      if (tile.south === grid[y+1][x].north) {
+        checklist ++;
+      }
+      if (tile.east === grid[y][x+1].west) {
+        checklist ++;
+      }
+      if (tile.west === grid[y][x-1].east) {
+        checklist ++;
+      }
+      if (checklist === 4) {
+        validTiles.push(i);
+      }
+    }
+    grid[y][x] = randomTile(validTiles);
+  }
+
+/*   let rules = [];
+  let validTiles = [];
+
+  if (grid[y-1][x].south !== "closed") {
+    rules.push(grid[y-1][x].south)
+  }
+  if (grid[y+1][x].north !== "closed") {
+    rules.push(grid[y+1][x].north)
+  }
+  if (grid[y][x+1].west !== "closed") {
+    rules.push(grid[y][x+1].west)
+  }
+  if (grid[y][x-1].east !== "closed") {
+    rules.push(grid[y][x-1].east)
+  }
 
   for (let i = 2; i < TILETYPES; i++) {
-    let thisTile = createTile(i);
-
-    validTiles.push(i);
-    
+    let tile = createTile(i);
+    let directionTile = [tile.north, tile.south, tile.east, tile.west];
+    for (let j = 0; j < rules.length; j++){
+      for (let k = 0; k < directionTile.length; k++) {
+        if (rules[j] === directionTile[k]) {
+          console.log(rules[j]);
+          console.log(directionTile[k]);
+          validTiles.push(i);
+        }
+      }  
+    }
   }
 
   console.log(validTiles);
-  grid[thisY][thisX] = randomTile(validTiles); 
-  
+  grid[y][x] = randomTile(validTiles); 
+   */
+}
+
+
+function randomTile(options) {
+
+  let randomIndex = Math.floor(random(options.length));
+  let chosenTile = createTile(options[randomIndex]);
+
+  if (options === []) {
+    chosenTile = createTile(1);
+  }
+
+  return chosenTile;
 }
 
 
 function mousePressed() {
 
   for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x ++) {
+    for (let x = 0; x < COLS; x++) {
 
-      if (grid[y][x] !== "blank" && ! grid[y][x].new) {
+      console.log(grid[y][x]);
+      if (grid[y][x].identity !== "blank" && ! grid[y][x].new) {
 
         if (grid[y][x].north === "open") {
           exploreCell(y-1, x);
@@ -187,6 +260,11 @@ function mousePressed() {
           grid[y][x].west = "explored";
         }
       }
+    }
+  }
+
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
       grid[y][x].new = false;
     }
   }
