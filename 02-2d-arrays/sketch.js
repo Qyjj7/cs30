@@ -14,6 +14,15 @@ let grid;
 let cellSize;
 
 
+function preload() {
+
+  cornerImage = loadImage("corner.png");
+  corridorImage = loadImage("corridor.png");
+  fourwayImage = loadImage("fourway.png");
+  startImage = loadImage("start.png");
+  blankImage = loadImage("blank.png");
+  deadendImage = loadImage("deadend.png");
+}
 
 function setup() {
 
@@ -46,7 +55,8 @@ function createTile(desiredTile) {
 
       identity: "blank",
       new: false,
-      color: 220,
+      sprite: blankImage,
+      spriteRotation: 0,
       north: "blank",
       south: "blank",
       east: "blank",
@@ -61,7 +71,8 @@ function createTile(desiredTile) {
 
       identity: "starting tile",
       new: false,
-      color: "white",
+      sprite: startImage,
+      spriteRotation: 0,
       north: "closed",
       south: "open",
       east: "closed",
@@ -76,7 +87,8 @@ function createTile(desiredTile) {
 
       identity: 0,
       new: true,
-      color: "black",
+      sprite: deadendImage,
+      spriteRotation: 0,
       north: "closed",
       south: "closed",
       east: "closed",
@@ -91,7 +103,8 @@ function createTile(desiredTile) {
 
       identity: 1,
       new: true,
-      color: "blue",
+      sprite: corridorImage,
+      spriteRotation: 0,
       north: "open",
       south: "open",
       east: "closed",
@@ -106,7 +119,8 @@ function createTile(desiredTile) {
 
       identity: 2,
       new: true,
-      color: "red",
+      sprite: corridorImage,
+      spriteRotation: PI/2,
       north: "closed",
       south: "closed",
       east: "open",
@@ -121,7 +135,8 @@ function createTile(desiredTile) {
 
       identity: 3,
       new: true,
-      color: "green",
+      sprite: cornerImage,
+      spriteRotation: 0,
       north: "open",
       south: "closed",
       east: "open",
@@ -136,7 +151,8 @@ function createTile(desiredTile) {
 
       identity: 4,
       new: true,
-      color: "orange",
+      sprite: cornerImage,
+      spriteRotation: PI/2,
       north: "closed",
       south: "open",
       east: "open",
@@ -151,7 +167,8 @@ function createTile(desiredTile) {
   
         identity: 5,
         new: true,
-        color: "purple",
+        sprite: cornerImage,
+        spriteRotation: PI,
         north: "closed",
         south: "open",
         east: "closed",
@@ -166,7 +183,8 @@ function createTile(desiredTile) {
 
       identity: 6,
       new: true,
-      color: "yellow",
+      sprite: cornerImage,
+      spriteRotation: 3*PI/2,
       north: "open",
       south: "closed",
       east: "closed",
@@ -181,7 +199,8 @@ function createTile(desiredTile) {
 
       identity: 7,
       new: true,
-      color: "pink",
+      sprite: fourwayImage,
+      spriteRotation: 0,
       north: "open",
       south: "open",
       east: "open",
@@ -197,17 +216,17 @@ function displayGrid(grid) {
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x ++) {
 
-      if (grid[y][x].identity !== "blank") {
-        fill(grid[y][x].color);
-      }
-      else {
-        noFill();
-      }
-      rect(x*cellSize, y*cellSize, cellSize, cellSize);
+      push();
+      imageMode(CENTER);
+      translate(x*cellSize, y*cellSize);
+      rotate(grid[y][x].spriteRotation);
+      translate(-x*cellSize, -y*cellSize);
+      image(grid[y][x].sprite, x*cellSize, y*cellSize, cellSize, cellSize);
+      pop();
     }
   }
 }
-
+  
 
 function create2dArray(ROWS, COLS) {
 
@@ -228,6 +247,7 @@ function create2dArray(ROWS, COLS) {
   }
 
   newGrid[1][7] = createTile("starting tile");
+  newGrid[2][7] = createTile(7);
   return newGrid;
 }
 
@@ -262,7 +282,6 @@ function exploreCell(y, x) {
     if (validTiles.length === 0) {
       validTiles.push(0);
     }
-    console.log(validTiles)
     grid[y][x] = randomTile(validTiles);
   }
 }
@@ -286,19 +305,15 @@ function mousePressed() {
 
         if (grid[y][x].north === "open") {
           exploreCell(y-1, x);
-          //grid[y][x].north = "explored";
         }
         if (grid[y][x].south === "open") {
           exploreCell(y+1, x);
-          //grid[y][x].south = "explored";
         }
         if (grid[y][x].east === "open") {
           exploreCell(y, x+1);
-          //grid[y][x].east = "explored";
         }
         if (grid[y][x].west === "open") {
           exploreCell(y, x-1);
-          //grid[y][x].west = "explored";
         }
       }
     }
