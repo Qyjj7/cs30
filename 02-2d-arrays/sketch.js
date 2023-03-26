@@ -6,8 +6,8 @@
 // - describe what you did to take this project "above and beyond"
 
 
-const ROWS = 15;
-const COLS = 15;
+const ROWS = 21;
+const COLS = 21;
 const TILETYPES = 8;
 
 let grid;
@@ -36,7 +36,7 @@ function setup() {
   else {
     cellSize = height/ROWS;
   }
-
+  generate();
 }
 
 
@@ -246,8 +246,8 @@ function create2dArray(ROWS, COLS) {
     }
   }
 
-  newGrid[1][7] = createTile("starting tile");
-  newGrid[2][7] = createTile(7);
+  newGrid[1][10] = createTile("starting tile");
+  newGrid[2][10] = createTile(7);
   return newGrid;
 }
 
@@ -296,32 +296,34 @@ function randomTile(validTiles) {
 }
 
 
-function mousePressed() {
+function generate() {
 
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
+  for (let i = 0; i < ROWS*COLS; i++) {
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
 
-      if (grid[y][x].identity !== "blank" && ! grid[y][x].new) {
+        if (grid[y][x].identity !== "blank" && ! grid[y][x].new) {
 
-        if (grid[y][x].north === "open") {
-          exploreCell(y-1, x);
-        }
-        if (grid[y][x].south === "open") {
-          exploreCell(y+1, x);
-        }
-        if (grid[y][x].east === "open") {
-          exploreCell(y, x+1);
-        }
-        if (grid[y][x].west === "open") {
-          exploreCell(y, x-1);
+          if (grid[y][x].north === "open") {
+            exploreCell(y-1, x);
+          }
+          if (grid[y][x].south === "open") {
+            exploreCell(y+1, x);
+          }
+          if (grid[y][x].east === "open") {
+            exploreCell(y, x+1);
+          }
+          if (grid[y][x].west === "open") {
+            exploreCell(y, x-1);
+          }
         }
       }
     }
-  }
 
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
-      grid[y][x].new = false;
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        grid[y][x].new = false;
+      }
     }
   }
 }
