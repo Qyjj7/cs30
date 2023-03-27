@@ -9,9 +9,22 @@
 const ROWS = 21;
 const COLS = 21;
 const TILETYPES = 8;
+const PLAYERSIZE = 10;
+const PLAYERCOLOR = "red";
+
+let cornerImage;
+let corridorImage;
+let fourwayImage;
+let startImage;
+let blankImage;
+let deadendImage;
 
 let grid;
 let cellSize;
+let startY = 1;
+let startX = 10;
+let playerY = 1;
+let playerX = 10;
 
 
 function preload() {
@@ -23,6 +36,7 @@ function preload() {
   blankImage = loadImage("blank.png");
   deadendImage = loadImage("deadend.png");
 }
+
 
 function setup() {
 
@@ -161,21 +175,21 @@ function createTile(desiredTile) {
     return SouthEastCorner;
   }
     
-    if (desiredTile === 5) {
+  if (desiredTile === 5) {
 
-      let SouthWestCorner = {
+    let SouthWestCorner = {
   
-        identity: 5,
-        new: true,
-        sprite: cornerImage,
-        spriteRotation: PI,
-        north: "closed",
-        south: "open",
-        east: "closed",
-        west: "open",
-      };
-      return SouthWestCorner;
-    }
+      identity: 5,
+      new: true,
+      sprite: cornerImage,
+      spriteRotation: PI,
+      north: "closed",
+      south: "open",
+      east: "closed",
+      west: "open",
+    };
+    return SouthWestCorner;
+  }
 
   if (desiredTile === 6) {
 
@@ -223,10 +237,43 @@ function displayGrid(grid) {
       translate(-x*cellSize, -y*cellSize);
       image(grid[y][x].sprite, x*cellSize, y*cellSize, cellSize, cellSize);
       pop();
+
+      if (x === playerX && y === playerY) {
+        fill(PLAYERCOLOR);
+        circle(x*cellSize, y*cellSize, PLAYERSIZE);
+      }
     }
   }
 }
-  
+
+
+function keyTyped() {
+
+  if (key === "w") {
+    if (grid[playerY][playerX].north === "open" && grid[playerY-1][playerX].identity !== 0) {
+      playerY --;
+    }
+  }
+
+  if (key === "a") {
+    if (grid[playerY][playerX].west === "open" && grid[playerY][playerX-1].identity !== 0) {
+      playerX --;
+    }
+  }
+
+  if (key === "s") {
+    if (grid[playerY][playerX].south === "open" && grid[playerY+1][playerX].identity !== 0) {
+      playerY ++;
+    }
+  }
+
+  if (key === "d") {
+    if (grid[playerY][playerX].east === "open" && grid[playerY][playerX+1].identity !== 0) {
+      playerX ++;
+    }
+  }
+}
+
 
 function create2dArray(ROWS, COLS) {
 
@@ -245,9 +292,8 @@ function create2dArray(ROWS, COLS) {
       }
     }
   }
-
-  newGrid[1][10] = createTile("starting tile");
-  newGrid[2][10] = createTile(7);
+  newGrid[startY][startX] = createTile("starting tile");
+  newGrid[startY+1][startX] = createTile(7);
   return newGrid;
 }
 
@@ -319,10 +365,24 @@ function generate() {
         }
       }
     }
-
     for (let y = 0; y < ROWS; y++) {
       for (let x = 0; x < COLS; x++) {
         grid[y][x].new = false;
+      }
+    }
+  }
+  makeEndPoint();
+}
+
+function makeEndPoint() {
+
+  let farthestAway = 0;
+
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+
+      if (y === 0 || y === ROWS-1 || x === 0 || x === COLS-1) {
+        console.log("hi");
       }
     }
   }
