@@ -18,6 +18,7 @@ let fourwayImage;
 let startImage;
 let blankImage;
 let deadendImage;
+let exitImage;
 
 let grid;
 let cellSize;
@@ -35,6 +36,7 @@ function preload() {
   startImage = loadImage("assets/start.png");
   blankImage = loadImage("assets/blank.png");
   deadendImage = loadImage("assets/deadend.png");
+  exitImage = loadImage("assets/exit.png");
 }
 
 
@@ -69,7 +71,7 @@ function createTile(desiredTile) {
 
       identity: "blank",
       new: false,
-      sprite: blankImage,
+      sprite: deadendImage,
       spriteRotation: 0,
       north: "blank",
       south: "blank",
@@ -95,11 +97,27 @@ function createTile(desiredTile) {
     return startingTile;
   }
 
-  if (desiredTile === 0) {
+  if (desiredTile === "exit") {
+
+    let exit = {
+
+      identity: "exit",
+      new: true,
+      sprite: exitImage,
+      spriteRotation: 0,
+      north: "open",
+      south: "open",
+      east: "open",
+      west: "open",
+    };
+    return exit;
+  }
+
+  if (desiredTile === "dead end") {
 
     let deadEnd = {
 
-      identity: 0,
+      identity: "dead end",
       new: true,
       sprite: deadendImage,
       spriteRotation: 0,
@@ -250,25 +268,25 @@ function displayGrid(grid) {
 function keyTyped() {
 
   if (key === "w") {
-    if (grid[playerY][playerX].north === "open" && grid[playerY-1][playerX].identity !== 0) {
+    if (grid[playerY][playerX].north === "open" && grid[playerY-1][playerX].identity !== "dead end") {
       playerY --;
     }
   }
 
   if (key === "a") {
-    if (grid[playerY][playerX].west === "open" && grid[playerY][playerX-1].identity !== 0) {
+    if (grid[playerY][playerX].west === "open" && grid[playerY][playerX-1].identity !== "dead end") {
       playerX --;
     }
   }
 
   if (key === "s") {
-    if (grid[playerY][playerX].south === "open" && grid[playerY+1][playerX].identity !== 0) {
+    if (grid[playerY][playerX].south === "open" && grid[playerY+1][playerX].identity !== "dead end") {
       playerY ++;
     }
   }
 
   if (key === "d") {
-    if (grid[playerY][playerX].east === "open" && grid[playerY][playerX+1].identity !== 0) {
+    if (grid[playerY][playerX].east === "open" && grid[playerY][playerX+1].identity !== "dead end") {
       playerX ++;
     }
   }
@@ -288,7 +306,7 @@ function create2dArray(ROWS, COLS) {
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
       if (y === 0 || y === ROWS-1 || x === 0 || x === COLS-1) {
-        newGrid[y][x] = createTile(0);
+        newGrid[y][x] = createTile("dead end");
       }
     }
   }
@@ -326,7 +344,7 @@ function exploreCell(y, x) {
     }
 
     if (validTiles.length === 0) {
-      validTiles.push(0);
+      validTiles.push("dead end");
     }
     grid[y][x] = randomTile(validTiles);
   }
@@ -371,19 +389,24 @@ function generate() {
       }
     }
   }
-  makeEndPoint();
+  makeExitPoint();
 }
 
-function makeEndPoint() {
+function makeExitPoint() {
 
-  let farthestAway = 0;
+  let exitY = 0;
+  let exitX = 0;
 
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
 
-      if (y === 0 || y === ROWS-1 || x === 0 || x === COLS-1) {
-        console.log("hi");
+      if (y !== 0 && y !== ROWS-1 && x !== 0 && x !== COLS-1) {
+        if (grid[y][x].identity === "dead end" && y > exitY) {
+          exitY = y;
+          exitX = x;
+        }
       }
     }
   }
+  grid[exitY][exitX] = createTile("exit");
 }
