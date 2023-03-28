@@ -29,12 +29,12 @@ let playerX = 10;
 
 function preload() {
 
-  cornerImage = loadImage("corner.png");
-  corridorImage = loadImage("corridor.png");
-  fourwayImage = loadImage("fourway.png");
-  startImage = loadImage("start.png");
-  blankImage = loadImage("blank.png");
-  deadendImage = loadImage("deadend.png");
+  cornerImage = loadImage("assets/corner.png");
+  corridorImage = loadImage("assets/corridor.png");
+  fourwayImage = loadImage("assets/fourway.png");
+  startImage = loadImage("assets/start.png");
+  blankImage = loadImage("assets/blank.png");
+  deadendImage = loadImage("assets/deadend.png");
 }
 
 
