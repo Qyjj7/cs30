@@ -6,8 +6,8 @@
 // - describe what you did to take this project "above and beyond"
 
 
-const ROWS = 21;
-const COLS = 21;
+const ROWS = 11;
+const COLS = 11;
 const TILETYPES = 8;
 const PLAYERSIZE = 10;
 const PLAYERCOLOR = "red";
@@ -23,9 +23,11 @@ let exitImage;
 let grid;
 let cellSize;
 let startY = 1;
-let startX = 10;
+let startX = 5;
 let playerY = 1;
-let playerX = 10;
+let playerX = 5;
+let zombieX;
+let zombieY;
 
 
 function preload() {
@@ -59,6 +61,7 @@ function setup() {
 function draw() {
 
   background(220);
+  moveZombie();
   displayGrid(grid);
 }
 
@@ -409,4 +412,25 @@ function makeExitPoint() {
     }
   }
   grid[exitY][exitX] = createTile("exit");
+  zombieY = exitY;
+  zombieX = exitX;
+}
+
+
+function moveZombie() {
+
+  let moveTo = pathfind();
+}
+
+function pathfind() {
+  
+  let pathfinderY = zombieY;
+  let pathfinderX = zombieX;
+
+  while (pathfinderY !== playerY && pathfinderX !== pathfinderX) {
+    if (grid[pathfinderY-1][pathfinderX].north !== "closed" && grid[pathfinderY-1][pathfinderX].identity !== "dead end") {
+      pathfinderY --;
+    }
+  }
+  
 }
