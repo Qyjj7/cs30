@@ -427,10 +427,15 @@ function pathfind() {
   let pathfinderY = zombieY;
   let pathfinderX = zombieX;
 
-  while (pathfinderY !== playerY && pathfinderX !== pathfinderX) {
-    if (grid[pathfinderY-1][pathfinderX].north !== "closed" && grid[pathfinderY-1][pathfinderX].identity !== "dead end") {
-      pathfinderY --;
+  let decisionSpots = [[pathfinderY, pathfinderX]];
+
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      if (grid[y][x].identity === 7) {
+        decisionSpots.push([y, x]);
+      }
     }
   }
+
   
 }
