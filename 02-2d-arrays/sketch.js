@@ -298,47 +298,36 @@ function keyTyped() {
 
   if (key === "w") {
     if (grid[playerY][playerX].north === "open" && grid[playerY-1][playerX].identity !== "dead end") {
+      grid[playerY][playerX].parentY = playerY-1;
+      grid[playerY][playerX].parentX = playerX;
       playerY --;
     }
   }
 
   if (key === "a") {
     if (grid[playerY][playerX].west === "open" && grid[playerY][playerX-1].identity !== "dead end") {
+      grid[playerY][playerX].parentY = playerY;
+      grid[playerY][playerX].parentX = playerX-1;
       playerX --;
     }
   }
 
   if (key === "s") {
     if (grid[playerY][playerX].south === "open" && grid[playerY+1][playerX].identity !== "dead end") {
+      grid[playerY][playerX].parentY = playerY+1;
+      grid[playerY][playerX].parentX = playerX;
       playerY ++;
     }
   }
 
   if (key === "d") {
     if (grid[playerY][playerX].east === "open" && grid[playerY][playerX+1].identity !== "dead end") {
+      grid[playerY][playerX].parentY = playerY;
+      grid[playerY][playerX].parentX = playerX+1;
       playerX ++;
     }
   }
   
-  grid[playerY-1][playerX].parentY = playerY;
-  grid[playerY-1][playerX].parentX = playerX;
-
-
-
-  grid[playerY+1][playerX].parentY = playerY;
-  grid[playerY+1][playerX].parentX = playerX;
-  
-
-
-  grid[playerY][playerX+1].parentY = playerY;
-  grid[playerY][playerX+1].parentX = playerX;
-  
-
-
-  grid[playerY+1][playerX-1].parentY = playerY;
-  grid[playerY+1][playerX-1].parentX = playerX;
-  
-
   updatePathfinder();
 }
 
