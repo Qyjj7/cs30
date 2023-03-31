@@ -6,10 +6,10 @@
 // - describe what you did to take this project "above and beyond"
 
 
-const ROWS = 11;
-const COLS = 11;
+const ROWS = 21;
+const COLS = 21;
 const TILETYPES = 8;
-const PLAYERSIZE = 20;
+const PLAYERSIZE = 10;
 const PLAYERCOLOR = "red";
 
 let cornerImage;
@@ -23,9 +23,9 @@ let exitImage;
 let grid;
 let cellSize;
 let startY = 1;
-let startX = 5;
+let startX = 10;
 let playerY = 1;
-let playerX = 5;
+let playerX = 10;
 let zombieX;
 let zombieY;
 let path = [];
@@ -55,14 +55,16 @@ function setup() {
   else {
     cellSize = height/ROWS;
   }
+
   generate();
+  
+  setInterval(moveZombie, 400);
 }
 
 
 function draw() {
 
   background(220);
-  moveZombie();
   displayGrid(grid);
 }
 
@@ -286,11 +288,15 @@ function displayGrid(grid) {
         fill(PLAYERCOLOR);
         circle(x*cellSize, y*cellSize, PLAYERSIZE);
       }
+      if (x === zombieX && y === zombieY) {
+        fill("green");
+        circle(x*cellSize, y*cellSize, PLAYERSIZE);
+      }
     }
   }
-  for (let i = 0; i < path.length; i++) {
-    circle(path[i][1]*cellSize, path[i][0]*cellSize, PLAYERSIZE/2);
-  }
+  //for (let i = 0; i < path.length; i++) {
+    //circle(path[i][1]*cellSize, path[i][0]*cellSize, PLAYERSIZE/2);
+  //}
 }
 
 
@@ -298,37 +304,37 @@ function keyTyped() {
 
   if (key === "w") {
     if (grid[playerY][playerX].north === "open" && grid[playerY-1][playerX].identity !== "dead end") {
-      grid[playerY][playerX].parentY = playerY-1;
-      grid[playerY][playerX].parentX = playerX;
+      //grid[playerY][playerX].parentY = playerY-1;
+      //grid[playerY][playerX].parentX = playerX;
       playerY --;
     }
   }
 
   if (key === "a") {
     if (grid[playerY][playerX].west === "open" && grid[playerY][playerX-1].identity !== "dead end") {
-      grid[playerY][playerX].parentY = playerY;
-      grid[playerY][playerX].parentX = playerX-1;
+      //grid[playerY][playerX].parentY = playerY;
+      //grid[playerY][playerX].parentX = playerX-1;
       playerX --;
     }
   }
 
   if (key === "s") {
     if (grid[playerY][playerX].south === "open" && grid[playerY+1][playerX].identity !== "dead end") {
-      grid[playerY][playerX].parentY = playerY+1;
-      grid[playerY][playerX].parentX = playerX;
+      //grid[playerY][playerX].parentY = playerY+1;
+      //grid[playerY][playerX].parentX = playerX;
       playerY ++;
     }
   }
 
   if (key === "d") {
     if (grid[playerY][playerX].east === "open" && grid[playerY][playerX+1].identity !== "dead end") {
-      grid[playerY][playerX].parentY = playerY;
-      grid[playerY][playerX].parentX = playerX+1;
+      //grid[playerY][playerX].parentY = playerY;
+      //grid[playerY][playerX].parentX = playerX+1;
       playerX ++;
     }
   }
-  
-  updatePathfinder();
+
+  path.push([playerY, playerX]);
 }
 
 
@@ -436,7 +442,7 @@ function generate() {
     }
   }
   makeExitPoint();
-  updatePathfinder();
+  initialPathfinder();
 }
 
 function makeExitPoint() {
@@ -467,23 +473,22 @@ function makeExitPoint() {
 
 function moveZombie() {
 
-  let moveTo = 0
+  zombieY = path[0][0];
+  zombieX = path[0][1];
+  path.shift();
 }
 
-function updatePathfinder() {
 
-  path = [];
-  
+function initialPathfinder() {
+
   let pathfinderY = zombieY;
   let pathfinderX = zombieX;
-  let counter = 0;
 
-  while ((pathfinderY !== playerY || pathfinderX !== playerX) && counter < 100) {
+  while ((pathfinderY !== playerY || pathfinderX !== playerX)) {
 
     path.push([pathfinderY, pathfinderX]);
     pathfinderY = grid[pathfinderY][pathfinderX].parentY;
     path.push([pathfinderY, pathfinderX]);
     pathfinderX = grid[pathfinderY][pathfinderX].parentX;
-    counter ++;
   }
 }
