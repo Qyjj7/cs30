@@ -9,7 +9,7 @@
 const ROWS = 11;
 const COLS = 11;
 const TILETYPES = 8;
-const PLAYERSIZE = 10;
+const PLAYERSIZE = 20;
 const PLAYERCOLOR = "red";
 
 let cornerImage;
@@ -28,6 +28,7 @@ let playerY = 1;
 let playerX = 5;
 let zombieX;
 let zombieY;
+let path = [];
 
 
 function preload() {
@@ -80,6 +81,8 @@ function createTile(desiredTile) {
       south: "blank",
       east: "blank",
       west: "blank",
+      parentY: "none",
+      parentX: "none",
     };
     return blank;
   }
@@ -96,6 +99,8 @@ function createTile(desiredTile) {
       south: "open",
       east: "closed",
       west: "closed",
+      parentY: "none",
+      parentX: "none",
     };
     return startingTile;
   }
@@ -112,6 +117,8 @@ function createTile(desiredTile) {
       south: "open",
       east: "open",
       west: "open",
+      parentY: "none",
+      parentX: "none",
     };
     return exit;
   }
@@ -128,6 +135,8 @@ function createTile(desiredTile) {
       south: "closed",
       east: "closed",
       west: "closed",
+      parentY: "none",
+      parentX: "none",
     };
     return deadEnd;
   }
@@ -144,6 +153,8 @@ function createTile(desiredTile) {
       south: "open",
       east: "closed",
       west: "closed",
+      parentY: "none",
+      parentX: "none",
     };
     return NorthSouthCorridor;
   }
@@ -160,6 +171,8 @@ function createTile(desiredTile) {
       south: "closed",
       east: "open",
       west: "open",
+      parentY: "none",
+      parentX: "none",
     };
     return EastWestCorridor;
   }
@@ -176,6 +189,8 @@ function createTile(desiredTile) {
       south: "closed",
       east: "open",
       west: "closed",
+      parentY: "none",
+      parentX: "none",
     };
     return NorthEastCorner;
   }
@@ -192,6 +207,8 @@ function createTile(desiredTile) {
       south: "open",
       east: "open",
       west: "closed",
+      parentY: "none",
+      parentX: "none",
     };
     return SouthEastCorner;
   }
@@ -208,6 +225,8 @@ function createTile(desiredTile) {
       south: "open",
       east: "closed",
       west: "open",
+      parentY: "none",
+      parentX: "none",
     };
     return SouthWestCorner;
   }
@@ -224,6 +243,8 @@ function createTile(desiredTile) {
       south: "closed",
       east: "closed",
       west: "open",
+      parentY: "none",
+      parentX: "none",
     };
     return NorthWestCorner;
   }
@@ -240,6 +261,8 @@ function createTile(desiredTile) {
       south: "open",
       east: "open",
       west: "open",
+      parentY: "none",
+      parentX: "none",
     };
     return FourWay;
   }
@@ -264,6 +287,9 @@ function displayGrid(grid) {
         circle(x*cellSize, y*cellSize, PLAYERSIZE);
       }
     }
+  }
+  for (let i = 0; i < path.length; i++) {
+    circle(path[i][1]*cellSize, path[i][0]*cellSize, PLAYERSIZE/2);
   }
 }
 
@@ -293,6 +319,27 @@ function keyTyped() {
       playerX ++;
     }
   }
+  
+  grid[playerY-1][playerX].parentY = playerY;
+  grid[playerY-1][playerX].parentX = playerX;
+
+
+
+  grid[playerY+1][playerX].parentY = playerY;
+  grid[playerY+1][playerX].parentX = playerX;
+  
+
+
+  grid[playerY][playerX+1].parentY = playerY;
+  grid[playerY][playerX+1].parentX = playerX;
+  
+
+
+  grid[playerY+1][playerX-1].parentY = playerY;
+  grid[playerY+1][playerX-1].parentX = playerX;
+  
+
+  updatePathfinder();
 }
 
 
@@ -314,12 +361,17 @@ function create2dArray(ROWS, COLS) {
     }
   }
   newGrid[startY][startX] = createTile("starting tile");
+  newGrid[startY][startX].parentY = startY-1;
+  newGrid[startY][startX].parentX = startX;
+  
   newGrid[startY+1][startX] = createTile(7);
+  newGrid[startY+1][startX].parentY = startY
+  newGrid[startY+1][startX].parentX = startX
   return newGrid;
 }
 
 
-function exploreCell(y, x) {
+function exploreCell(y, x, parentY, parentX) {
 
   let validTiles = [];
   
@@ -350,6 +402,8 @@ function exploreCell(y, x) {
       validTiles.push("dead end");
     }
     grid[y][x] = randomTile(validTiles);
+    grid[y][x].parentY = parentY;
+    grid[y][x].parentX = parentX;
   }
 }
 
@@ -372,16 +426,16 @@ function generate() {
         if (grid[y][x].identity !== "blank" && ! grid[y][x].new) {
 
           if (grid[y][x].north === "open") {
-            exploreCell(y-1, x);
+            exploreCell(y-1, x, y, x);
           }
           if (grid[y][x].south === "open") {
-            exploreCell(y+1, x);
+            exploreCell(y+1, x, y, x);
           }
           if (grid[y][x].east === "open") {
-            exploreCell(y, x+1);
+            exploreCell(y, x+1, y, x);
           }
           if (grid[y][x].west === "open") {
-            exploreCell(y, x-1);
+            exploreCell(y, x-1, y, x);
           }
         }
       }
@@ -393,6 +447,7 @@ function generate() {
     }
   }
   makeExitPoint();
+  updatePathfinder();
 }
 
 function makeExitPoint() {
@@ -411,7 +466,11 @@ function makeExitPoint() {
       }
     }
   }
+  parentY = grid[exitY][exitX].parentY;
+  parentX = grid[exitY][exitX].parentX;
   grid[exitY][exitX] = createTile("exit");
+  grid[exitY][exitX].parentY = parentY;
+  grid[exitY][exitX].parentX = parentX;
   zombieY = exitY;
   zombieX = exitX;
 }
@@ -419,23 +478,23 @@ function makeExitPoint() {
 
 function moveZombie() {
 
-  let moveTo = pathfind();
+  let moveTo = 0
 }
 
-function pathfind() {
+function updatePathfinder() {
+
+  path = [];
   
   let pathfinderY = zombieY;
   let pathfinderX = zombieX;
+  let counter = 0;
 
-  let decisionSpots = [[pathfinderY, pathfinderX]];
+  while ((pathfinderY !== playerY || pathfinderX !== playerX) && counter < 100) {
 
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
-      if (grid[y][x].identity === 7) {
-        decisionSpots.push([y, x]);
-      }
-    }
+    path.push([pathfinderY, pathfinderX]);
+    pathfinderY = grid[pathfinderY][pathfinderX].parentY;
+    path.push([pathfinderY, pathfinderX]);
+    pathfinderX = grid[pathfinderY][pathfinderX].parentX;
+    counter ++;
   }
-
-  
 }
