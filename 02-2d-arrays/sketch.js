@@ -467,35 +467,52 @@ function moveZombie() {
 }
 
 
-
 function updatePathfinder() {
   
-  let doraExplorerY = zombieY;
-  let doraExplorerX = zombieX;
-  let explored = [[doraExplorerY, doraExplorerX]];
-  let decisionPoints = [];
+  let explored = [[zombieY, zombieX, fCost(zombieY, zombieX)]];
+  let reachable = [getReachables(zombieY, zombieX)];
+  let counter = 0;
 
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
-      if (grid[y][x].identity === 7) {
-        decisionPoints.push([y, x, fCost(y, x), "none"]);
-      }
-    }
+  while (counter < 4) {
+    counter++;
+
+    let lowestFCost = getLowestFCost(reachable);
+    let current = lowestFCost;
+
   }
-
-  explored.push([doraExplorerY, doraExplorerX]);
 }
 
 
 function fCost(y, x) {
 
-  let costs = [];
-  for (let i = -1; i <= 1; i++) {
-    for (let j = -1; j <= 1; j++) {
-      let gCost = abs(y - zombieY) + abs(x - zombieX);
-      let hCost = abs(y - playerY) + abs(x - playerY);
-      costs.push(gCost+hCost);
+  let gCost = abs(y - zombieY) + abs(x - zombieX);
+  let hCost = abs(y - playerY) + abs(x - playerY);
+
+  return hCost+gCost;
+}
+
+
+function getLowestFCost(array) {
+
+  if (array === []) {
+    return "none";
+  }
+
+  let lowest = array[0];
+
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] < lowest) {
+      lowest = array[i];
     }
   }
-  return costs;
+  return lowest;
+}
+
+
+function getReachables(y, x) {
+
+  let reachables = [];
+    
+  
+  
 }
