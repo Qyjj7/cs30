@@ -6,8 +6,8 @@
 // - describe what you did to take this project "above and beyond"
 
 
-const ROWS = 7;
-const COLS = 7;
+const ROWS = 9;
+const COLS = 9;
 const TILETYPES = 8;
 const PLAYERSIZE = 20;
 const PLAYERCOLOR = "red";
@@ -513,6 +513,9 @@ function makeExitPoint() {
 
 function moveZombie() {
 
+  zombieY = path[0].y;
+  zombieX = path[0].x;
+  path.shift();
 }
 
 
@@ -520,10 +523,12 @@ function updatePathfinder() {
   
   explored = [];
   unexplored = [grid[zombieY][zombieX]];
+  let counter = 0;
 
-  while (unexplored.length > 0) {
+  while (unexplored.length > 0 && counter < 3) {
 
-    let lowestIndex = 0
+    counter++;
+    let lowestIndex = 0;
 
     for (let i = 0; i < unexplored.length; i++) {
       if (unexplored[i].fCost < unexplored[lowestIndex].fCost) {
@@ -543,6 +548,7 @@ function updatePathfinder() {
         temp = temp.parent;
       }
       console.log("done");
+      break;
     }
 
     removeFromArray(unexplored, current);
@@ -551,23 +557,12 @@ function updatePathfinder() {
     for (let i = 0; i < current.neighbors.length; i++) {
 
       let thisNeighbor = current.neighbors[i];
-
-      if (!explored.includes(thisNeighbor)) {
-        tempGCost = current.gCost+1;
-
-        if (unexplored.includes(thisNeighbor)) {
-          if (tempGCost < thisNeighbor.gCost) {
-            thisNeighbor.gCost = tempGCost;
-          }
-          else {
-            thisNeighbor.gCost = tempGCost;
-            unexplored.push(thisNeighbor);
-          }
-        }
-        thisNeighbor.hCost = getHeuristic(thisNeighbor, grid[playerX][playerX, playerY])
-        thisNeighbor.fCost = thisNeighbor.gCost + thisNeighbor.hCost;
-        thisNeighbor.parent = current;
-      }
+      console.log(thisNeighbor);
+      thisNeighbor.gCost = getHeuristic(thisNeighbor, grid[zombieY][zombieX]);
+      thisNeighbor.hCost = getHeuristic(thisNeighbor, grid[playerY][playerX]);
+      thisNeighbor.fCost = thisNeighbor.gCost + thisNeighbor.hCost;
+      thisNeighbor.parent = current;
+      unexplored.push(thisNeighbor);
     }
   }
 }
@@ -575,7 +570,7 @@ function updatePathfinder() {
 
 function getHeuristic(pointA, pointB) {
 
-  return (abs(pointA.y - pointB.y) + abs(pointA.x - pointB.x));
+  return abs(pointA.y - pointB.y) + abs(pointA.x - pointB.x);
 }
 
 
