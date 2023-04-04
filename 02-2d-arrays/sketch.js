@@ -29,6 +29,8 @@ let playerX = (COLS-1)/2;
 let zombieX;
 let zombieY;
 let path = [];
+let explored =[];
+let unexplored = [];
 
 
 function preload() {
@@ -58,7 +60,7 @@ function setup() {
 
   generate();
   
-  setInterval(moveZombie, 400);
+  //setInterval(moveZombie, 400);
 }
 
 
@@ -69,7 +71,7 @@ function draw() {
 }
 
 
-function createTile(desiredTile) {
+function createTile(desiredTile, y, x) {
 
   if (desiredTile === "blank") {
 
@@ -83,8 +85,13 @@ function createTile(desiredTile) {
       south: "blank",
       east: "blank",
       west: "blank",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return blank;
   }
@@ -101,8 +108,13 @@ function createTile(desiredTile) {
       south: "open",
       east: "closed",
       west: "closed",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return startingTile;
   }
@@ -119,8 +131,13 @@ function createTile(desiredTile) {
       south: "open",
       east: "open",
       west: "open",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return exit;
   }
@@ -137,8 +154,13 @@ function createTile(desiredTile) {
       south: "closed",
       east: "closed",
       west: "closed",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return deadEnd;
   }
@@ -155,8 +177,13 @@ function createTile(desiredTile) {
       south: "open",
       east: "closed",
       west: "closed",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return NorthSouthCorridor;
   }
@@ -173,8 +200,13 @@ function createTile(desiredTile) {
       south: "closed",
       east: "open",
       west: "open",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return EastWestCorridor;
   }
@@ -191,8 +223,13 @@ function createTile(desiredTile) {
       south: "closed",
       east: "open",
       west: "closed",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return NorthEastCorner;
   }
@@ -209,8 +246,13 @@ function createTile(desiredTile) {
       south: "open",
       east: "open",
       west: "closed",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return SouthEastCorner;
   }
@@ -227,8 +269,13 @@ function createTile(desiredTile) {
       south: "open",
       east: "closed",
       west: "open",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return SouthWestCorner;
   }
@@ -245,8 +292,13 @@ function createTile(desiredTile) {
       south: "closed",
       east: "closed",
       west: "open",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return NorthWestCorner;
   }
@@ -263,8 +315,13 @@ function createTile(desiredTile) {
       south: "open",
       east: "open",
       west: "open",
-      parentY: "none",
-      parentX: "none",
+      gCost: 0,
+      hCost: 0,
+      fCost: 0,
+      y: y,
+      x: x,
+      neighbors: [],
+      parent: "none",
     };
     return FourWay;
   }
@@ -292,11 +349,11 @@ function displayGrid(grid) {
         fill("green");
         circle(x*cellSize, y*cellSize, PLAYERSIZE);
       }
+      if (path.includes(grid[y][x])) {
+        circle(x*cellSize, y*cellSize, PLAYERSIZE);
+      }
     }
   }
-  //for (let i = 0; i < path.length; i++) {
-  //circle(path[i][1]*cellSize, path[i][0]*cellSize, PLAYERSIZE/2);
-  //}
 }
 
 
@@ -326,6 +383,7 @@ function keyTyped() {
     }
   }
 
+  updatePathfinder();
 }
 
 
@@ -347,17 +405,12 @@ function create2dArray(ROWS, COLS) {
     }
   }
   newGrid[startY][startX] = createTile("starting tile");
-  newGrid[startY][startX].parentY = startY-1;
-  newGrid[startY][startX].parentX = startX;
-  
   newGrid[startY+1][startX] = createTile(7);
-  newGrid[startY+1][startX].parentY = startY;
-  newGrid[startY+1][startX].parentX = startX;
   return newGrid;
 }
 
 
-function exploreCell(y, x, parentY, parentX) {
+function exploreCell(y, x) {
 
   let validTiles = [];
   
@@ -387,19 +440,10 @@ function exploreCell(y, x, parentY, parentX) {
     if (validTiles.length === 0) {
       validTiles.push("dead end");
     }
-    grid[y][x] = randomTile(validTiles);
-    grid[y][x].parentY = parentY;
-    grid[y][x].parentX = parentX;
+ 
+    let randomIndex = Math.floor(random(validTiles.length));
+    grid[y][x] = createTile(validTiles[randomIndex], y, x);
   }
-}
-
-
-function randomTile(validTiles) {
-
-  let randomIndex = Math.floor(random(validTiles.length));
-  let chosenTile = createTile(validTiles[randomIndex]);
-
-  return chosenTile;
 }
 
 
@@ -412,16 +456,16 @@ function generate() {
         if (grid[y][x].identity !== "blank" && ! grid[y][x].new) {
 
           if (grid[y][x].north === "open") {
-            exploreCell(y-1, x, y, x);
+            exploreCell(y-1, x);
           }
           if (grid[y][x].south === "open") {
-            exploreCell(y+1, x, y, x);
+            exploreCell(y+1, x);
           }
           if (grid[y][x].east === "open") {
-            exploreCell(y, x+1, y, x);
+            exploreCell(y, x+1);
           }
           if (grid[y][x].west === "open") {
-            exploreCell(y, x-1, y, x);
+            exploreCell(y, x-1);
           }
         }
       }
@@ -432,7 +476,14 @@ function generate() {
       }
     }
   }
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      getNeighbors(y, x);
+    }
+  }
+
   makeExitPoint();
+  updatePathfinder();
 }
 
 function makeExitPoint() {
@@ -452,7 +503,8 @@ function makeExitPoint() {
     }
   }
 
-  grid[exitY][exitX] = createTile("exit");
+  grid[exitY][exitX] = createTile("exit", exitY, exitX);
+  getNeighbors(exitY, exitX);
 
   zombieY = exitY;
   zombieX = exitX;
@@ -461,58 +513,97 @@ function makeExitPoint() {
 
 function moveZombie() {
 
-  zombieY = path[0][0];
-  zombieX = path[0][1];
-  path.shift();
 }
 
 
 function updatePathfinder() {
   
-  let explored = [[zombieY, zombieX, fCost(zombieY, zombieX)]];
-  let reachable = [getReachables(zombieY, zombieX)];
-  let counter = 0;
+  explored = [];
+  unexplored = [grid[zombieY][zombieX]];
 
-  while (counter < 4) {
-    counter++;
+  while (unexplored.length > 0) {
 
-    let lowestFCost = getLowestFCost(reachable);
-    let current = lowestFCost;
+    let lowestIndex = 0
 
-  }
-}
+    for (let i = 0; i < unexplored.length; i++) {
+      if (unexplored[i].fCost < unexplored[lowestIndex].fCost) {
+        lowestIndex = i;
+      }
+    }
 
+    let current = unexplored[lowestIndex];
 
-function fCost(y, x) {
+    if (current === grid[playerY][playerX]) {
 
-  let gCost = abs(y - zombieY) + abs(x - zombieX);
-  let hCost = abs(y - playerY) + abs(x - playerY);
+      path = [];
+      let temp = current;
+      path.push(temp);
+      while (temp.parent) {
+        path.push(temp.parent);
+        temp = temp.parent;
+      }
+      console.log("done");
+    }
 
-  return hCost+gCost;
-}
+    removeFromArray(unexplored, current);
+    explored.push(current);
 
+    for (let i = 0; i < current.neighbors.length; i++) {
 
-function getLowestFCost(array) {
+      let thisNeighbor = current.neighbors[i];
 
-  if (array === []) {
-    return "none";
-  }
+      if (!explored.includes(thisNeighbor)) {
+        tempGCost = current.gCost+1;
 
-  let lowest = array[0];
-
-  for (let i = 0; i < array.length; i++) {
-    if (array[i] < lowest) {
-      lowest = array[i];
+        if (unexplored.includes(thisNeighbor)) {
+          if (tempGCost < thisNeighbor.gCost) {
+            thisNeighbor.gCost = tempGCost;
+          }
+          else {
+            thisNeighbor.gCost = tempGCost;
+            unexplored.push(thisNeighbor);
+          }
+        }
+        thisNeighbor.hCost = getHeuristic(thisNeighbor, grid[playerX][playerX, playerY])
+        thisNeighbor.fCost = thisNeighbor.gCost + thisNeighbor.hCost;
+        thisNeighbor.parent = current;
+      }
     }
   }
-  return lowest;
 }
 
 
-function getReachables(y, x) {
+function getHeuristic(pointA, pointB) {
 
-  let reachables = [];
-    
-  
-  
+  return (abs(pointA.y - pointB.y) + abs(pointA.x - pointB.x));
+}
+
+
+function getNeighbors(y, x) {
+
+  if (y !== 0 && y !== ROWS-1 && x !== 0 && x !== COLS-1) {
+
+    if (grid[y-1][x].south !== "closed" && grid[y][x].north === "open") {
+      grid[y][x].neighbors.push(grid[y-1][x]);
+    }
+    if (grid[y+1][x].north !== "closed" && grid[y][x].south === "open") {
+      grid[y][x].neighbors.push(grid[y+1][x]);
+    }
+    if (grid[y][x+1].west !== "closed" && grid[y][x].east === "open") {
+      grid[y][x].neighbors.push(grid[y][x+1]);
+    }
+    if (grid[y][x-1].east !== "closed" && grid[y][x].west === "open") {
+      grid[y][x].neighbors.push(grid[y][x-1]);
+    }
+  }
+}
+
+
+function removeFromArray(array, element) {
+
+  for (let i = array.length-1; i >= 0; i --) {
+    if (array[i] === element) {
+      array.splice(i, 1);
+    }
+  }
 }
