@@ -330,6 +330,7 @@ function createTile(desiredTile, y, x) {
 
 function displayGrid(grid) {
 
+  translate(cellSize/2, cellSize/2);
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x ++) {
 
@@ -341,14 +342,12 @@ function displayGrid(grid) {
       image(grid[y][x].sprite, x*cellSize, y*cellSize, cellSize, cellSize);
       pop();
 
-      if (x === playerX && y === playerY) {
-        fill(PLAYERCOLOR);
-        circle(x*cellSize, y*cellSize, PLAYERSIZE);
-      }
-      if (x === zombieX && y === zombieY) {
-        fill("green");
-        circle(x*cellSize, y*cellSize, PLAYERSIZE);
-      }
+      fill(PLAYERCOLOR);
+      circle(playerX*cellSize, playerY*cellSize, PLAYERSIZE);
+      
+      fill("green");
+      circle(zombieX*cellSize, zombieY*cellSize, PLAYERSIZE);
+      
       if (path.includes(grid[y][x])) {
         circle(x*cellSize, y*cellSize, PLAYERSIZE);
       }
@@ -557,11 +556,12 @@ function updatePathfinder() {
     for (let i = 0; i < current.neighbors.length; i++) {
 
       let thisNeighbor = current.neighbors[i];
-      console.log(thisNeighbor);
+
       thisNeighbor.gCost = getHeuristic(thisNeighbor, grid[zombieY][zombieX]);
       thisNeighbor.hCost = getHeuristic(thisNeighbor, grid[playerY][playerX]);
       thisNeighbor.fCost = thisNeighbor.gCost + thisNeighbor.hCost;
       thisNeighbor.parent = current;
+      console.log(thisNeighbor);
       unexplored.push(thisNeighbor);
     }
   }
