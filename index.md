@@ -5,6 +5,7 @@
 - [Objects and Arrays](01-objects-arrays)
 - [2D Arrays](02-2d-arrays)
 - [Final Project](final)
+- [Darts](darts)
 
 ## Demos
 
