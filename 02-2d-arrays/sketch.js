@@ -65,17 +65,18 @@ function setup() {
   generate();
 
   // creates DOM dropdown to select maze size
-  mazeSize = createSelect();
+  let mazeSize = createSelect();
   mazeSize.position(0, 25);
   mazeSize.option("default", 17);
   mazeSize.option("tiny", 7);
   mazeSize.option("small", 11);
   mazeSize.option("large", 21);
   mazeSize.option("huge", 31);
-  mazeSize.changed(function () { tempCols = mazeSize.value(); tempRows = mazeSize.value() });
+  mazeSize.changed(function () {
+    tempCols = mazeSize.value(); tempRows = mazeSize.value() });
 
   // creates DOM button to generate a new maze
-  resetButton = createButton("Reset");
+  let resetButton = createButton("Reset");
   resetButton.position(0, 0);
   resetButton.mousePressed(function () { playerY = exitY; playerX = exitX });
 }
@@ -359,22 +360,22 @@ function mouseMoved() {
 
   if (y === playerY-1 && x === playerX) { //North
     if (grid[y+1][x].north === "open" && grid[y][x].identity !== "dead end") {
-      playerY = playerY-1
+      playerY = playerY-1;
     }
   }
   if (y === playerY+1 && x === playerX) { //South
     if (grid[y-1][x].south === "open" && grid[y][x].identity !== "dead end") {
-      playerY = playerY+1
+      playerY = playerY+1;
     }
   }
   if (x === playerX+1 && y === playerY) { //East
     if (grid[y][x-1].east === "open" && grid[y][x].identity !== "dead end") {
-      playerX = playerX+1
+      playerX = playerX+1;
     }
   }
   if (x === playerX-1 && y === playerY) { //West
     if (grid[y][x+1].west === "open" && grid[y][x].identity !== "dead end") {
-      playerX = playerX-1
+      playerX = playerX-1;
     }
   }
 }
