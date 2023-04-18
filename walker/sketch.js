@@ -11,8 +11,8 @@ class Walker {
     this.x = x;
     this.y = y;
     this.colour = color(random(255), random(255), random(255));
-    this.speed = 15;
-    this.size = 5; 
+    this.speed = 20;
+    this.size = 10; 
   }
 
   display() {
