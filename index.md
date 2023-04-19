@@ -18,3 +18,4 @@
 - [Game of Life](game-of-life)
 - [Walker](walker)
 - [Fireworks](fireworks)
+- [Ball](ball)
